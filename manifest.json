@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Email Reader",
+  "description": "Demo Chrome Extension that uses React and Webpack",
+  "version": "1.0.0",
+  "permissions": ["activeTab", "scripting", "tabs", "identity", "storage"],
+  "icons": {
+    "16": "icons/icon.jpeg",
+    "48": "icons/icon.jpeg",
+    "128": "icons/icon.jpeg"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Email Reader",
+    "default_icon": {
+      "16": "icons/icon.jpeg",
+      "48": "icons/icon.jpeg",
+      "128": "icons/icon.jpeg"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "oauth2": {
+    "client_id": "720454154501-8i4rm9ldrubbfsqe3kcos99n2fir1f3e.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/gmail.compose"
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["index.html", "iframe.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  }
+}
