@@ -4,7 +4,6 @@ let iUserProfile = false;
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (msg.action === 'openUserProfile') {
     if (!iUserProfile) {
-      console.log(msg, 'msg:::::::');
       const iframe = document.createElement('iframe');
       iframe.classList.add('user-profile-iframe');
       iframe.src = chrome.runtime.getURL('infoModel.html');

@@ -10,10 +10,8 @@ function App() {
         active: true,
         currentWindow: true,
       });
-      console.log('Tabs:', tabs);
       if (Array.isArray(tabs) && tabs.length > 0) {
         const activeTab = tabs[0];
-        console.log('Active Tab:', activeTab);
         const gmailPattern = /https:\/\/mail\.google\.com\//;
 
         if (activeTab.url && gmailPattern.test(activeTab.url)) {
