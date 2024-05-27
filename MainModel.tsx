@@ -50,13 +50,13 @@ const MainModel: React.FC = () => {
       setLoading(true);
       const fetchResponse = async () => {
         const response = await fetch(
-          'https://openrouter.ai/api/v1/chat/completions',
+          'https://api.groq.com/openai/v1/chat/completions',
           {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
               Authorization:
-                'Bearer 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',
+                'Bearer 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',
             },
             body: JSON.stringify({
               messages: [
@@ -65,8 +65,7 @@ const MainModel: React.FC = () => {
                   content: modifiedEmailText,
                 },
               ],
-              model: 'openai/gpt-3.5-turbo',
-              max_tokens: 200,
+              model: 'llama3-8b-8192',
             }),
           }
         );

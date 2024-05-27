@@ -8,6 +8,9 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       iframe.classList.add('user-profile-iframe');
       iframe.src = chrome.runtime.getURL('infoModel.html');
       document.body.appendChild(iframe);
+      setTimeout(() => {
+        iframe.classList.add('active');
+      }, 10);
       iUserProfile = true;
       const closeListener = (
         message: { action: string },
@@ -16,7 +19,13 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       ) => {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
+            iframe.classList.remove('active');
+            setTimeout(() => {
+              if (iframe && iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+                iUserProfile = false;
+              }
+            }, 300);
             setTimeout(() => {
               const replyButton = document.querySelector(
                 '.og.T-I-J3'
@@ -149,6 +158,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       iframe.classList.add('custom-iframe');
       iframe.src = chrome.runtime.getURL('iframe.html');
       document.body.appendChild(iframe);
+      setTimeout(() => {
+        iframe.classList.add('active');
+      }, 10);
       iframeExists = true;
 
       const closeListener = (
@@ -158,7 +170,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       ) => {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
+            iframe.classList.remove('active');
+            setTimeout(() => {
+              if (iframe && iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+                iframeExists = false;
+              }
+            }, 300);
             iframeExists = false;
           }
         }
