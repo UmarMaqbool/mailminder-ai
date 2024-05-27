@@ -1,14 +1,24 @@
 let emailText = null;
 export async function getAuthToken(): Promise<string | undefined> {
   return new Promise((resolve) => {
-    chrome?.identity?.getAuthToken({ interactive: true }, (token) => {
-      if (token) {
-        resolve(token);
-      } else {
-        console.error('Error obtaining token:', chrome.runtime.lastError);
-        resolve(undefined);
+    chrome?.identity?.getAuthToken(
+      {
+        interactive: true,
+        scopes: [
+          'https://www.googleapis.com/auth/userinfo.email',
+          'https://www.googleapis.com/auth/userinfo.profile',
+        ],
+      },
+      (token) => {
+        if (token) {
+          console.log('Token:', token);
+          resolve(token);
+        } else {
+          console.error('Error obtaining token:', chrome.runtime.lastError);
+          resolve(undefined);
+        }
       }
-    });
+    );
   });
 }
 
@@ -19,24 +29,23 @@ chrome.runtime.onMessage.addListener(async function (
 ) {
   if (message.action === 'getMessageDetails') {
     const { messageId, accessToken } = message;
-    {
-      try {
-        const response = await fetch(
-          `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        const messageDetails = await response.json();
-        emailText = messageDetails.snippet;
-      } catch (error) {
-        console.error('Error fetching message details:', error);
-      }
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const messageDetails = await response.json();
+      emailText = messageDetails.snippet;
+    } catch (error) {
+      console.error('Error fetching message details:', error);
     }
   }
 });
+
 
 chrome.runtime.onMessage.addListener(async function (
   message,
@@ -44,7 +53,7 @@ chrome.runtime.onMessage.addListener(async function (
   sendResponse
 ) {
   try {
-    const [tab] = await chrome.tabs.query({
+    const [tab] = await chrome?.tabs?.query({
       active: true,
       currentWindow: true,
     });
@@ -70,7 +79,7 @@ const clickHandler = async () => {
           action: 'receiveEmailText',
           response: emailText,
         });
-    }, 200);
+    }, 500);
   } else {
     console.log('API response does not contain result or No Active Tab');
   }

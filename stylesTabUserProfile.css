@@ -1,0 +1,103 @@
+.tab-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68em;
+  height: 27em;
+  border: none;
+  border-radius: 17px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+  z-index: 999999;
+  background-color: white;
+}
+
+.container {
+  background-color: #ffffff;
+  padding: 20px;
+  margin: 5px;
+  font-family: Arial, sans-serif;
+}
+
+.heading {
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 12px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.logo-header {
+  display: flex;
+  align-items: center;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.head-divider {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  margin: 18px 0px 6px 0px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 58em;
+  height: 15em;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 50%;
+}
+
+.user-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.user-email {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+.user-pic {
+  flex: 0 0 auto;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  object-fit: cover;
+  margin-left: 20px;
+}
+
+.no-profile {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0 10px 0;
+  color: #333;
+}

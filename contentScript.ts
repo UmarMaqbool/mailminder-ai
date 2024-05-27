@@ -1,45 +1,63 @@
+import './stylesContentScript.css';
 let iframeExists = false;
+let iUserProfile = false;
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+  if (msg.action === 'openUserProfile') {
+    if (!iUserProfile) {
+      console.log(msg, 'msg:::::::');
+      const iframe = document.createElement('iframe');
+      iframe.classList.add('user-profile-iframe');
+      iframe.src = chrome.runtime.getURL('infoModel.html');
+      document.body.appendChild(iframe);
+      iUserProfile = true;
+      const closeListener = (
+        message: { action: string },
+        sender: any,
+        sendResponse: any
+      ) => {
+        if (message.action === 'closeIframe') {
+          if (iframe && iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
+            setTimeout(() => {
+              const replyButton = document.querySelector(
+                '.og.T-I-J3'
+              ) as HTMLElement | null;
+              replyButton?.click();
+            }, 10);
+            iframeExists = true;
+            iUserProfile = false;
+          }
+        }
+      };
+      chrome.runtime.onMessage.addListener(closeListener);
+    }
+  }
+});
 
 const addButtonToPage = () => {
   const mainDiv = document.querySelector('.amn');
   if (mainDiv && !document.getElementById('myInjectButton')) {
-    const contentWrapper = document.createElement('div');
-    contentWrapper.style.display = 'flex';
-    contentWrapper.style.alignItems = 'center';
     const button = document.createElement('button');
+    button.id = 'myInjectButton';
+    const contentWrapper = document.createElement('div');
+    contentWrapper.classList.add('contentWrapper');
     const logoImg = document.createElement('img');
     logoImg.src =
       'https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I';
-    logoImg.style.width = '17px';
-    logoImg.style.height = '17px';
-    logoImg.style.marginRight = '5px';
-    logoImg.style.borderRadius = '50%';
-    button.id = 'myInjectButton';
-    button.style.padding = '9.5px 16px';
-    button.style.backgroundColor = 'transparent';
-    button.style.color = '#87150b';
-    button.style.border = '1px solid #87150b';
-    button.style.borderRadius = '18px';
-    button.style.fontWeight = '500';
-    button.style.marginRight = '8px';
-    button.style.cursor = 'pointer';
-    button.style.fontFamily = 'Arial, sans-serif';
-    button.style.fontSize = '.875rem';
     const buttonText = document.createTextNode('EvolveBay');
     button.addEventListener('click', function () {
       chrome.runtime.sendMessage({ action: 'authenticateWithGoogle' });
       chrome.runtime.sendMessage({ action: 'executeOnClicker' });
     });
-
+    contentWrapper.appendChild(logoImg);
+    contentWrapper.appendChild(buttonText);
+    button.appendChild(contentWrapper);
     const firstSpan = mainDiv.querySelector('span');
     if (firstSpan) {
       mainDiv.insertBefore(button, firstSpan);
     } else {
       console.log('Span not found');
     }
-    contentWrapper.appendChild(logoImg);
-    contentWrapper.appendChild(buttonText);
-    button.appendChild(contentWrapper);
   }
 };
 
@@ -51,13 +69,7 @@ const addButtonToReply = () => {
       'https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I';
     button.alt = 'icon';
     button.id = 'myInjectSmallButton';
-    button.style.width = '24px';
-    button.style.height = '24px';
-    button.style.borderRadius = '20px';
-    button.style.marginLeft = '10px';
-    button.style.marginRight = '2px';
-    button.style.cursor = 'pointer';
-
+    button.classList.add('myInjectSmallButton');
     button.addEventListener('click', async function () {
       chrome.runtime.sendMessage({ action: 'authenticateWithGoogle' });
       iframeExists = false;
@@ -65,7 +77,6 @@ const addButtonToReply = () => {
         chrome.runtime.sendMessage({ action: 'closeIframe' });
       }
     });
-
     const firstSpan = mainSmallDiv?.querySelector('span');
     if (firstSpan) {
       mainSmallDiv?.insertBefore(button, firstSpan);
@@ -76,8 +87,9 @@ const addButtonToReply = () => {
 };
 
 function isGmailInbox(url: string): boolean {
+  const inboxRegex = /#(inbox|sent)/;
   return (
-    url.startsWith('https://mail.google.com/mail/u/') && url.includes('#inbox')
+    url.startsWith('https://mail.google.com/mail/u/') && inboxRegex.test(url)
   );
 }
 
@@ -90,7 +102,7 @@ function addInboxButtonIfRequired(url: string) {
 window.onload = function () {
   setTimeout(() => {
     addButtonToPage();
-  }, 500);
+  }, 1000);
 };
 
 document.addEventListener('click', (event) => {
@@ -118,7 +130,7 @@ addInboxButtonIfRequired(window.location.href);
 window.addEventListener('hashchange', () => {
   addInboxButtonIfRequired(window.location.href);
   const url = window.location.href;
-  if (url.endsWith('#inbox')) {
+  if (url.endsWith('#inbox') || !url.endsWith('/')) {
     if (iframeExists) chrome.runtime.sendMessage({ action: 'closeIframe' });
   }
 });
@@ -129,21 +141,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       '.ams.bkH'
     ) as HTMLElement | null;
     replyButton?.click();
-    if (!iframeExists) {
+    if (!iframeExists && !iUserProfile) {
       const iframe = document.createElement('iframe');
-      iframe.style.cssText = `
-            position: absolute;
-            top: 11em; 
-            left: 4em; 
-            width: 550px; 
-            height: 350px;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
-            border-radius: 17px;
-            z-index: 999999;
-            background-color: white;
-          `;
+      iframe.classList.add('custom-iframe');
       iframe.src = chrome.runtime.getURL('iframe.html');
       document.body.appendChild(iframe);
       iframeExists = true;

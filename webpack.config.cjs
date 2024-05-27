@@ -10,9 +10,11 @@ module.exports = {
     background: './background.ts',
     react: './index.tsx',
     iframe: './iframe.tsx',
+    infoModel: './infoModel.tsx',
+    tabInfoModel: './tabInfoModel.tsx',
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve('dist'),
     filename: '[name].js',
     clean: true,
   },
@@ -27,10 +29,40 @@ module.exports = {
       filename: 'iframe.html',
       inject: false,
     }),
+    new HtmlWebpackPlugin({
+      template: './infoModel.html',
+      filename: 'infoModel.html',
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      template: './tabInfoModel.html',
+      filename: 'tabInfoModel.html',
+      inject: false,
+    }),
     new CopyPlugin({
       patterns: [
         {
           from: path.resolve('manifest.json'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesContentScript.css'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesMainModel.css'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesUserProfile.css'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesTabUserProfile.css'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesApp.css'),
           to: path.resolve('dist'),
         },
         {
@@ -55,6 +87,10 @@ module.exports = {
             ],
           },
         },
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },

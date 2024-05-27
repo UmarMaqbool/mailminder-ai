@@ -23,21 +23,25 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://mail.google.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["contentScript.js"]
     }
   ],
   "host_permissions": ["http://*/*", "https://*/*"],
   "oauth2": {
-    "client_id": "720454154501-8i4rm9ldrubbfsqe3kcos99n2fir1f3e.apps.googleusercontent.com",
+    "client_id": "720454154501-7e52g41fjh96acgft572i5cl86n4gr8o.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/gmail.readonly",
-      "https://www.googleapis.com/auth/gmail.compose"
+      "https://www.googleapis.com/auth/gmail.compose",
+      "https://www.googleapis.com/auth/gmail.modify",
+      "https://www.googleapis.com/auth/contacts.readonly",
+      "https://www.googleapis.com/auth/contacts",
+      "profile"
     ]
   },
   "web_accessible_resources": [
     {
-      "resources": ["index.html", "iframe.html"],
+      "resources": ["index.html", "iframe.html", "infoModel.html", "tabInfoModel.html"],
       "matches": ["<all_urls>"]
     }
   ],
