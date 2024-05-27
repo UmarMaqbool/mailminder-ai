@@ -50,6 +50,10 @@ module.exports = {
           to: path.resolve('dist/icons'),
         },
         {
+          from: path.resolve('stylesContentScript.css'),
+          to: path.resolve('dist'),
+        },
+        {
           from: path.resolve('stylesMainModel.css'),
           to: path.resolve('dist'),
         },
