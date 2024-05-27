@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
               ) as HTMLElement | null;
               replyButton?.click();
             }, 10);
-            iframeExists = true;
+            iframeExists = false;
             iUserProfile = false;
           }
         }
@@ -71,9 +71,13 @@ const addButtonToReply = () => {
     button.classList.add('myInjectSmallButton');
     button.addEventListener('click', async function () {
       chrome.runtime.sendMessage({ action: 'authenticateWithGoogle' });
-      iframeExists = false;
-      if (!iframeExists) {
+      chrome.runtime.sendMessage({ action: 'clickReplyButton' });
+      if (iframeExists) {
         chrome.runtime.sendMessage({ action: 'closeIframe' });
+      } else {
+        setTimeout(() => {
+          chrome.runtime.sendMessage({ action: 'receiveEmailText' });
+        }, 1000);
       }
     });
     const firstSpan = mainSmallDiv?.querySelector('span');
@@ -155,7 +159,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
             iframe.parentNode.removeChild(iframe);
-            iframeExists = true;
+            iframeExists = false;
           }
         }
       };
