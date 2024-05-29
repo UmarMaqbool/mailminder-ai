@@ -34,16 +34,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.profile-button {
-  padding: 10px 30px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  outline: none;
-}
-
 .google-button {
   display: flex;
   align-items: center;
@@ -64,4 +54,14 @@
   width: 20px;
   height: 20px;
   margin-right: 10px;
+}
+
+.user-pic {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  object-fit: cover;
+  margin-left: 20px;
 }

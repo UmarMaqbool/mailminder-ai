@@ -1,30 +1,58 @@
-import React,{useState} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getAuthToken } from './background';
 import './stylesApp.css';
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [responseText, setResponseText] = useState(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const useRefState = useRef(false);
 
-  const checkAuthentication = async (): Promise<any> => {
-    return new Promise((resolve) => {
-      chrome.runtime.sendMessage({ action: 'checkAuthentication' });
-      chrome.runtime.onMessage.addListener((message) => {
-        if (message.action === 'authenticationStatus') {
-          resolve(message);
-        }
-      });
-    });
-  };
+  useEffect(() => {
+    useRefState.current = true;
+    generateResponse();
+    return () => {
+      useRefState.current = false;
+    };
+  }, []);
 
-  checkAuthentication().then((response) => {
-   if (response?.authenticated) {
+  const generateResponse = async () => {
+    try {
+      const token = await getAuthToken();
+      setLoading(true);
+      const response = await fetchProfileInfo(token);
+      if (useRefState.current) {
         setAuthenticated(true);
-      } else {
+        setResponseText(response.photos?.[0]?.url || 'default-photo-url');
+      }
+    } catch (error) {
+      if (useRefState.current) {
         setAuthenticated(false);
       }
-  });
+      console.error('Error fetching profile info:', error);
+    } finally {
+      if (useRefState.current) {
+        setLoading(false);
+      }
+    }
+  };
 
-  const onButtonClick = async () => {
+  const fetchProfileInfo = async (token: string | undefined) => {
+    const response = await fetch(
+      'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  };
+
+  const onProfileHandler = async () => {
     try {
       const token = await getAuthToken();
       const tabs = await chrome?.tabs?.query({
@@ -68,39 +96,95 @@ function App() {
     }
   };
 
+  const onGoogleButtonHandler = () => {
+    generateResponse();
+  };
+
+  const deleteTokenHandler = () => {
+    chrome.identity.getAuthToken({ interactive: false }, (token) => {
+      if (token) {
+        chrome.identity.removeCachedAuthToken({ token }, () => {
+          setAuthenticated(false);
+          setResponseText(null);
+          console.log('Token deleted');
+        });
+      } else {
+        console.log('No token found.');
+      }
+    });
+  };
+  
+
   return (
     <div className="container">
-      <div className="header">
-        <div className="logo-header">
-          <img
-            src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
-            height={'28px'}
-            width={'28px'}
-            style={{ borderRadius: '50%' }}
-            alt="EvolveBay Logo"
-          ></img>
-          <p className="heading">EvolveBay</p>
-        </div>
-        <button onClick={onButtonClick} className="profile-button">
-          See Profile
-        </button>
-      </div>
-      <hr className="head-divider" />
-      
-      {authenticated ? (
-         <div>Here Profile</div>
-        ) : (
-          <button onClick={onButtonClick} className="google-button">
-            <img
-              src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
-              alt="Google Logo"
-              className="google-logo"
-            />
-            Sign in with Google
-          </button>
-        )}
+      {loading ? (
+        <div className="spinner"></div>
+      ) : (
+        <>
+          <div className="header">
+            <div className="logo-header">
+              <img
+                src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+                height={'28px'}
+                width={'28px'}
+                style={{ borderRadius: '50%' }}
+                alt="EvolveBay Logo"
+              />
+              <p className="heading">EvolveBay</p>
+            </div>
+          </div>
+          <hr className="head-divider" />
+          {authenticated ? (
+              <>
+              <img
+                src={responseText || 'default-photo-url'}
+                alt="Profile"
+                className="user-pic"
+                onClick={onProfileHandler}
+              />
+              <button onClick={deleteTokenHandler} className="delete-button">
+                Delete Token
+              </button>
+            </>
+          ) : (
+            <button onClick={onGoogleButtonHandler} className="google-button">
+              <img
+                src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
+                alt="Google Logo"
+                className="google-logo"
+              />
+              Sign in with Google
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 }
+
+const spinnerStyle = `
+.spinner {
+  border: 3px solid rgba(255, 0, 0, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid #87150b;
+  width: 2em;
+  height: 2em;
+  animation: spin 1s linear infinite;
+  margin: 4em auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+`;
+
+const styleElement = document.createElement('style');
+styleElement.innerHTML = spinnerStyle;
+document.head.appendChild(styleElement);
 
 export default App;
