@@ -1,6 +1,42 @@
 import './stylesContentScript.css';
 let iframeExists = false;
 let iUserProfile = false;
+const checkAuthentication = async (): Promise<any> => {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ action: 'checkAuthentication' });
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message.action === 'authenticationStatus') {
+        resolve(message);
+      }
+    });
+  });
+};
+
+const showLoginButton = () => {
+  const iframe = document.createElement('iframe');
+  iframe.classList.add('custom-iframe');
+  iframe.src = chrome.runtime.getURL('auth.html');
+  document.body.appendChild(iframe);
+  setTimeout(() => {
+    iframe.classList.add('active');
+  }, 10);
+  iframeExists = true;
+
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === 'closeIframe') {
+      if (iframe && iframe.parentNode) {
+        iframe.classList.remove('active');
+        setTimeout(() => {
+          if (iframe && iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
+            iframeExists = false;
+          }
+        }, 300);
+      }
+    }
+  });
+};
+
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (msg.action === 'openUserProfile') {
     if (!iUserProfile) {
@@ -12,11 +48,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         iframe.classList.add('active');
       }, 10);
       iUserProfile = true;
-      const closeListener = (
-        message: { action: string },
-        sender: any,
-        sendResponse: any
-      ) => {
+      const closeListener = (message: { action: string }) => {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
             iframe.classList.remove('active');
@@ -53,9 +85,16 @@ const addButtonToPage = () => {
     logoImg.src =
       'https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I';
     const buttonText = document.createTextNode('EvolveBay');
-    button.addEventListener('click', function () {
-      chrome.runtime.sendMessage({ action: 'authenticateWithGoogle' });
-      chrome.runtime.sendMessage({ action: 'executeOnClicker' });
+    button.addEventListener('click', async function () {
+      checkAuthentication().then((response) => {
+        if (response?.authenticated) {
+          chrome.runtime.sendMessage({ action: 'executeOnClicker' });
+          console.log('User is authenticated');
+        } else {
+          console.log('User is not authenticated');
+          showLoginButton();
+        }
+      });
     });
     contentWrapper.appendChild(logoImg);
     contentWrapper.appendChild(buttonText);
@@ -79,15 +118,23 @@ const addButtonToReply = () => {
     button.id = 'myInjectSmallButton';
     button.classList.add('myInjectSmallButton');
     button.addEventListener('click', async function () {
-      chrome.runtime.sendMessage({ action: 'authenticateWithGoogle' });
-      chrome.runtime.sendMessage({ action: 'clickReplyButton' });
-      if (iframeExists) {
-        chrome.runtime.sendMessage({ action: 'closeIframe' });
-      } else {
-        setTimeout(() => {
-          chrome.runtime.sendMessage({ action: 'receiveEmailText' });
-        }, 1000);
-      }
+      checkAuthentication().then((response) => {
+        if (response?.authenticated) {
+          chrome.runtime.sendMessage({ action: 'clickReplyButton' });
+          if (iframeExists) {
+            chrome.runtime.sendMessage({ action: 'closeIframe' });
+          } else {
+            setTimeout(() => {
+              chrome.runtime.sendMessage({ action: 'receiveEmailText' });
+            }, 1000);
+          }
+        } else {
+          if (iframeExists) {
+            chrome.runtime.sendMessage({ action: 'closeIframe' });
+          }
+          showLoginButton();
+        }
+      });
     });
     const firstSpan = mainSmallDiv?.querySelector('span');
     if (firstSpan) {
@@ -219,3 +266,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     const emailText = message.emailText;
   }
 });
+
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.type === 'childList') {
+      addButtonToReply();
+    }
+  });
+});
+
+const config = { childList: true, subtree: true };
+observer.observe(document.body, config);

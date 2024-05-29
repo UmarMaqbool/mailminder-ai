@@ -12,6 +12,7 @@ module.exports = {
     iframe: './iframe.tsx',
     infoModel: './infoModel.tsx',
     tabInfoModel: './tabInfoModel.tsx',
+    auth: './auth.tsx',
   },
   output: {
     path: path.resolve('dist'),
@@ -37,6 +38,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './tabInfoModel.html',
       filename: 'tabInfoModel.html',
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      template: './auth.html',
+      filename: 'auth.html',
       inject: false,
     }),
     new CopyPlugin({

@@ -57,6 +57,26 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       }
       break;
 
+    case 'checkAuthentication':
+      (async () => {
+        const authToken = await getAuthToken(false);
+        if (authToken) {
+          if (sender.tab?.id)
+            chrome.tabs.sendMessage(sender.tab.id, {
+              action: 'authenticationStatus',
+              authenticated: true,
+              token: authToken,
+            });
+        } else {
+          if (sender.tab?.id)
+            chrome.tabs.sendMessage(sender.tab.id, {
+              action: 'authenticationStatus',
+              authenticated: false,
+            });
+        }
+      })();
+      break;
+      
     case 'executeOnClicker':
       const [tab] = await chrome.tabs.query({
         active: true,

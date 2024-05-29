@@ -1,8 +1,29 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { getAuthToken } from './background';
 import './stylesApp.css';
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(true);
+
+  const checkAuthentication = async (): Promise<any> => {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({ action: 'checkAuthentication' });
+      chrome.runtime.onMessage.addListener((message) => {
+        if (message.action === 'authenticationStatus') {
+          resolve(message);
+        }
+      });
+    });
+  };
+
+  checkAuthentication().then((response) => {
+   if (response?.authenticated) {
+        setAuthenticated(true);
+      } else {
+        setAuthenticated(false);
+      }
+  });
+
   const onButtonClick = async () => {
     try {
       const token = await getAuthToken();
@@ -65,14 +86,19 @@ function App() {
         </button>
       </div>
       <hr className="head-divider" />
-      <button onClick={onButtonClick} className="google-button">
-        <img
-          src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
-          alt="Google Logo"
-          className="google-logo"
-        />
-        Sign in with Google
-      </button>
+      
+      {authenticated ? (
+         <div>Here Profile</div>
+        ) : (
+          <button onClick={onButtonClick} className="google-button">
+            <img
+              src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
+              alt="Google Logo"
+              className="google-logo"
+            />
+            Sign in with Google
+          </button>
+        )}
     </div>
   );
 }

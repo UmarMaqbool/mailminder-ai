@@ -45,7 +45,8 @@
         "index.html",
         "iframe.html",
         "infoModel.html",
-        "tabInfoModel.html"
+        "tabInfoModel.html",
+        "auth.html"
       ],
       "matches": ["<all_urls>"]
     }
