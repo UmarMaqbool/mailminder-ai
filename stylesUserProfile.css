@@ -181,3 +181,22 @@
   color: #ffffff;
   background-color: #d32f2f;
 }
+
+.spinner {
+  border: 3px solid rgba(255, 0, 0, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid #87150b;
+  width: 6em;
+  height: 6em;
+  animation: spin 1s linear infinite;
+  margin: 14em auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

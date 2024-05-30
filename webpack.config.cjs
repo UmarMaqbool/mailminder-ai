@@ -64,10 +64,6 @@ module.exports = {
           to: path.resolve('dist'),
         },
         {
-          from: path.resolve('stylesTabUserProfile.css'),
-          to: path.resolve('dist'),
-        },
-        {
           from: path.resolve('stylesApp.css'),
           to: path.resolve('dist'),
         },

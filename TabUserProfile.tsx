@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import './stylesTabUserProfile.css';
+import './stylesUserProfile.css';
+import { RiContactsLine } from 'react-icons/ri';
+import { CiStar } from 'react-icons/ci';
 import { getAuthToken } from './background';
 
 interface ProfileInfo {
@@ -152,17 +154,32 @@ const TabUserProfile: React.FC = () => {
   return (
     <div className="tab-container">
       <div className="sidebar">
+        <div className="logo-header">
+          <img
+            src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+            height="32px"
+            width="32px"
+            style={{ borderRadius: '50%' }}
+          />
+          <p className="heading">Mail Minder</p>
+        </div>
         <div
           className={`menu-item ${activeModule === 'Package' ? 'active' : ''}`}
           onClick={() => setActiveModule('Package')}
+          style={{ display: 'flex', alignItems: 'center' }}
         >
-          📦 Subscriptions
+          <CiStar style={{ marginRight: '5px', fontSize: '18px' }} />{' '}
+          Subscriptions
         </div>
         <div
           className={`menu-item ${activeModule === 'Profile' ? 'active' : ''}`}
           onClick={() => setActiveModule('Profile')}
+          style={{ display: 'flex', alignItems: 'center' }}
         >
-          👤 Profile
+          <RiContactsLine
+            style={{ marginRight: '8px', fontSize: '15px', marginLeft: '3px' }}
+          />{' '}
+          Profile
         </div>
         <button onClick={deleteUserData} className="delete-button">
           Delete Account
@@ -170,13 +187,7 @@ const TabUserProfile: React.FC = () => {
       </div>
       <div className="content">
         <div className="header">
-          <div className="logo-header">
-            <img
-              src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
-              height="32px"
-              width="32px"
-              style={{ borderRadius: '50%' }}
-            />
+          <div className="profile-header">
             <p className="heading">Profile</p>
           </div>
         </div>
