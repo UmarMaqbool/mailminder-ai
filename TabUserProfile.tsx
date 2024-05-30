@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './stylesTabUserProfile.css';
 import { getAuthToken } from './background';
+
 interface ProfileInfo {
   names?: { displayName: string }[];
   emailAddresses?: { value: string }[];
   photos?: { url: string }[];
 }
+
 const TabUserProfile: React.FC = () => {
   const [responseText, setResponseText] = useState<ProfileInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [activeModule, setActiveModule] = useState<string>('Profile');
   const useRefState = useRef(false);
 
   useEffect(() => {
@@ -56,6 +59,7 @@ const TabUserProfile: React.FC = () => {
       setLoading(false);
     }
   };
+
   const deleteTokenHandler = async () => {
     try {
       const token = await getAuthToken(false);
@@ -108,9 +112,63 @@ const TabUserProfile: React.FC = () => {
     }
   };
 
+  const renderContent = () => {
+    if (activeModule === 'Package') {
+      return <div style={{ marginTop: '2em' }}>Subscriptions</div>;
+    }
+    if (activeModule === 'Profile') {
+      return loading ? (
+        <div className="spinner"></div>
+      ) : (
+        <div style={{ display: 'flex' }}>
+          {responseText ? (
+            <div className="user-profile-container">
+              <div className="user-info">
+                <p className="user-name">
+                  Name:{' '}
+                  {responseText.names?.[0]?.displayName ||
+                    'No display name available'}
+                </p>
+                <p className="user-email">
+                  Email:{' '}
+                  {responseText.emailAddresses?.[0]?.value ||
+                    'No email available'}
+                </p>
+              </div>
+              <img
+                src={responseText.photos?.[0]?.url || 'default-photo-url'}
+                alt="Profile"
+                className="user-pic"
+              />
+            </div>
+          ) : (
+            <p className="no-profile">No Profile Available</p>
+          )}
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="tab-container">
-      <div className="container">
+      <div className="sidebar">
+        <div
+          className={`menu-item ${activeModule === 'Package' ? 'active' : ''}`}
+          onClick={() => setActiveModule('Package')}
+        >
+          📦 Subscriptions
+        </div>
+        <div
+          className={`menu-item ${activeModule === 'Profile' ? 'active' : ''}`}
+          onClick={() => setActiveModule('Profile')}
+        >
+          👤 Profile
+        </div>
+        <button onClick={deleteUserData} className="delete-button">
+          Delete Account
+        </button>
+      </div>
+      <div className="content">
         <div className="header">
           <div className="logo-header">
             <img
@@ -119,72 +177,14 @@ const TabUserProfile: React.FC = () => {
               width="32px"
               style={{ borderRadius: '50%' }}
             />
-            <p className="heading">User Profile</p>
+            <p className="heading">Profile</p>
           </div>
         </div>
         <hr className="head-divider" />
-        <div className="content-container">
-          {loading ? (
-            <div className="spinner"></div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {responseText ? (
-                <div className="user-profile-container">
-                  <div className="user-info">
-                    <p className="user-name">
-                      Name:{' '}
-                      {responseText.names?.[0]?.displayName ||
-                        'No display name available'}
-                    </p>
-                    <p className="user-email">
-                      Email:{' '}
-                      {responseText.emailAddresses?.[0]?.value ||
-                        'No email available'}
-                    </p>
-                  </div>
-                  <img
-                    src={responseText.photos?.[0]?.url || 'default-photo-url'}
-                    alt="Profile"
-                    className="user-pic"
-                  />
-                  <button onClick={deleteUserData} className="delete-button">
-                    Delete User Data
-                  </button>
-                </div>
-              ) : (
-                <p className="no-profile">No Profile Available</p>
-              )}
-            </div>
-          )}
-        </div>
+        <div className="content-container">{renderContent()}</div>
       </div>
     </div>
   );
 };
-
-const spinnerStyle = `
-.spinner {
-  border: 3px solid rgba(255, 0, 0, 0.3);
-  border-radius: 50%;
-  border-top: 3px solid #87150b;
-  width: 6em;
-  height: 6em;
-  animation: spin 1s linear infinite;
-  margin: 5em auto;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-`;
-
-const styleElement = document.createElement('style');
-styleElement.innerHTML = spinnerStyle;
-document.head.appendChild(styleElement);
 
 export default TabUserProfile;

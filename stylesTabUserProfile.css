@@ -5,6 +5,7 @@
   transform: translate(-50%, -50%);
   width: 68em;
   height: 27em;
+  display: flex;
   border: none;
   border-radius: 17px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
@@ -16,6 +17,7 @@
   background-color: #ffffff;
   padding: 20px;
   margin: 5px;
+  flex: 1;
   font-family: Arial, sans-serif;
 }
 
@@ -31,16 +33,21 @@
 .header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  align-items: center;
+  margin: 0px;
+  padding: 12px;
 }
 
 .logo-header {
   display: flex;
   align-items: center;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 
 .content-container {
   display: flex;
+  width: 53em;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -50,7 +57,7 @@
   width: 100%;
   border: none;
   border-bottom: 1px solid #ccc;
-  margin: 18px 0px 6px 0px;
+  margin: 0px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -58,10 +65,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 58em;
+  width: 53em;
   height: 15em;
-  padding: 20px;
+  padding: 3em;
   box-sizing: border-box;
+  margin-top: 2em;
 }
 
 .user-info {
@@ -70,25 +78,26 @@
   flex-direction: column;
   justify-content: center;
   max-width: 50%;
+  margin-bottom: 20px;
 }
 
 .user-name {
   font-size: 24px;
   font-weight: bold;
-  margin: 0 0 10px 0;
   color: #333;
+  margin: 5px 0;
 }
 
 .user-email {
   font-size: 18px;
   color: #666;
-  margin: 0;
+  margin: 5px 0;
 }
 
 .user-pic {
   flex: 0 0 auto;
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   border: 3px solid #ddd;
   object-fit: cover;
@@ -110,4 +119,69 @@
   border-radius: 4px;
   cursor: pointer;
   outline: none;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar .menu-item {
+  padding: 15px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.sidebar .menu-item:hover,
+.sidebar .menu-item.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  color: #333;
+}
+
+.sidebar .menu-item.active {
+  background-color: #d0d0d0;
+}
+
+.sidebar button {
+  margin-top: auto;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
+}
+
+.spinner {
+  border: 3px solid rgba(255, 0, 0, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid #87150b;
+  width: 6em;
+  height: 6em;
+  animation: spin 1s linear infinite;
+  margin: 5em auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
