@@ -114,7 +114,7 @@ const TabUserProfile: React.FC = () => {
 
   const renderContent = () => {
     if (activeModule === 'Package') {
-      return <div style={{ marginTop: '2em' }}>Subscriptions</div>;
+      return <div className="subscribe">Subscriptions</div>;
     }
     if (activeModule === 'Profile') {
       return loading ? (
