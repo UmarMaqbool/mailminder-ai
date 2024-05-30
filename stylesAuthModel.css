@@ -93,3 +93,12 @@
   height: 20px;
   margin-right: 8px;
 }
+
+.link-underline {
+  text-decoration: underline;
+  color: blue;
+}
+
+.link-underline:hover {
+  color: darkblue;
+}

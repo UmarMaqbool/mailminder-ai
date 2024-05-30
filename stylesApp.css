@@ -34,12 +34,13 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.google-button {
+.google-button,
+.logout-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px;
-  margin-top: 10px;
+  padding: 5px 10px;
+  margin-top: 5px;
   background-color: #ffffff;
   color: #757575;
   border: 1px solid #dadce0;
@@ -52,14 +53,16 @@
   transition: all 0.3s ease;
 }
 
-.google-button:hover {
+.google-button:hover,
+.logout-button:hover {
   background-color: #f8f9fa;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   border-color: #c6c8cc;
   color: #5f6368;
 }
 
-.google-button:active {
+.google-button:active,
+.logout-button:active {
   background-color: #ececec;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -78,4 +81,39 @@
   border: 3px solid #ddd;
   object-fit: cover;
   margin-left: 20px;
+  cursor: pointer;
+}
+.user-pic:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.table-container {
+  display: table;
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+}
+
+.table-row {
+  display: table-row;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+.table-row:hover {
+  background-color: #f3f3f3;
+}
+
+.table-cell {
+  display: table-cell;
+  padding: 10px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.icon {
+  margin-right: 10px;
 }
