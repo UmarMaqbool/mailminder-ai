@@ -48,24 +48,48 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.container-google {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2em;
+  background-color: #ffffff;
+}
+
 .google-button {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 10px 20px;
-  margin-top: 10px;
+  margin: 10px 0px;
   background-color: #ffffff;
   color: #757575;
   border: 1px solid #dadce0;
   border-radius: 4px;
   cursor: pointer;
   outline: none;
+  width: 15em;
   font-size: 14px;
   font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.google-button:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: #c6c8cc;
+  color: #5f6368;
+}
+
+.google-button:active {
+  background-color: #ececec;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .google-logo {
   width: 20px;
   height: 20px;
-  margin-right: 10px;
+  margin-right: 8px;
 }

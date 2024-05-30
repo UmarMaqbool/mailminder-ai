@@ -48,12 +48,26 @@
   outline: none;
   font-size: 14px;
   font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.google-button:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: #c6c8cc;
+  color: #5f6368;
+}
+
+.google-button:active {
+  background-color: #ececec;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .google-logo {
   width: 20px;
   height: 20px;
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
 .user-pic {
