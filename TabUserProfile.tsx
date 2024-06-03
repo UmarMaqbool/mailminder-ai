@@ -88,6 +88,7 @@ const TabUserProfile: React.FC = () => {
     if (responseText && responseText.emailAddresses?.[0]?.value) {
       const emailAddress = responseText.emailAddresses[0].value;
       try {
+        setLoading(true);
         const backendResponse = await fetch(
           `http://localhost:5000/api/profile`,
           {
@@ -101,8 +102,12 @@ const TabUserProfile: React.FC = () => {
 
         if (backendResponse.ok) {
           deleteTokenHandler();
+          chrome.runtime.sendMessage({ action: 'closeIframe' });
           console.log('User data deleted from the backend');
           setResponseText(null);
+          setTimeout(() => {
+            setLoading(false);
+          }, 3000);
         } else {
           console.error('Error deleting user data from the backend');
         }

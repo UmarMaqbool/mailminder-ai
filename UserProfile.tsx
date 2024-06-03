@@ -101,6 +101,7 @@ const UserProfile: React.FC = () => {
     if (responseText && responseText.emailAddresses?.[0]?.value) {
       const emailAddress = responseText.emailAddresses[0].value;
       try {
+        setLoading(true);
         const backendResponse = await fetch(
           `http://localhost:5000/api/profile`,
           {
@@ -114,6 +115,7 @@ const UserProfile: React.FC = () => {
 
         if (backendResponse.ok) {
           deleteTokenHandler();
+          chrome.runtime.sendMessage({ action: 'closeIframe' });
           console.log('User data deleted from the backend');
           setResponseText(null);
         } else {
