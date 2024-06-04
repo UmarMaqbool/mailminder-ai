@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getAuthToken } from './background';
 import './stylesApp.css';
+import HelpModel from './HelpModel';
+import FeedbackModel from './FeedbackModel';
+import CommunityModel from './CommunityModel';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [responseText, setResponseText] = useState(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [activeModule, setActiveModule] = useState<string | null>(null);
   const useRefState = useRef(false);
 
   useEffect(() => {
@@ -125,76 +129,104 @@ function App() {
     }
   };
 
+  const renderActiveModule = () => {
+    switch (activeModule) {
+      case 'Help':
+        return <HelpModel onBack={() => setActiveModule(null)} />;
+      case 'Feedback':
+        return <FeedbackModel onBack={() => setActiveModule(null)} />;
+      case 'Community':
+        return <CommunityModel onBack={() => setActiveModule(null)} />;
+      default:
+        return renderMainPopup();
+    }
+  };
+
+  const renderMainPopup = () => {
+    return (
+      <>
+        <div className="header">
+          <div className="logo-header">
+            <img
+              src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+              height={'28px'}
+              width={'28px'}
+              style={{ borderRadius: '50%' }}
+              alt="EvolveBay Logo"
+            />
+            <p className="heading">EvolveBay</p>
+          </div>
+          {authenticated ? (
+            <img
+              src={responseText || 'default-photo-url'}
+              alt="Profile"
+              className="user-pic"
+              onClick={onProfileHandler}
+            />
+          ) : (
+            <button onClick={onGoogleButtonHandler} className="google-button">
+              <img
+                src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
+                alt="Google Logo"
+                className="google-logo"
+              />
+              Login
+            </button>
+          )}
+        </div>
+        <hr className="head-divider" />
+        {authenticated ? (
+          <div>
+            <div className="table-container">
+              <div className="table-row">
+                <button
+                  className="table-cell"
+                  onClick={() => setActiveModule('Help')}
+                >
+                  <span role="img" aria-label="help" className="icon">
+                    ❓
+                  </span>
+                  Need Help
+                </button>
+              </div>
+              <div className="table-row">
+                <button
+                  className="table-cell"
+                  onClick={() => setActiveModule('Feedback')}
+                >
+                  <span role="img" aria-label="feedback" className="icon">
+                    💬
+                  </span>
+                  Provide Feedback
+                </button>
+              </div>
+              <div className="table-row">
+                <button
+                  className="table-cell"
+                  onClick={() => setActiveModule('Community')}
+                >
+                  <span role="img" aria-label="community" className="icon">
+                    👥
+                  </span>
+                  Community
+                </button>
+              </div>
+            </div>
+            <button onClick={deleteTokenHandler} className="logout-button">
+              Logout
+            </button>
+          </div>
+        ) : null}
+      </>
+    );
+  };
+
   return (
     <div className="container">
       {loading ? (
         <div className="spinner"></div>
       ) : (
-        <>
-          <div className="header">
-            <div className="logo-header">
-              <img
-                src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
-                height={'28px'}
-                width={'28px'}
-                style={{ borderRadius: '50%' }}
-                alt="EvolveBay Logo"
-              />
-              <p className="heading">EvolveBay</p>
-            </div>
-            {authenticated ? (
-              <img
-                src={responseText || 'default-photo-url'}
-                alt="Profile"
-                className="user-pic"
-                onClick={onProfileHandler}
-              />
-            ) : (
-              <button onClick={onGoogleButtonHandler} className="google-button">
-                <img
-                  src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
-                  alt="Google Logo"
-                  className="google-logo"
-                />
-                Login
-              </button>
-            )}
-          </div>
-          <hr className="head-divider" />
-          {authenticated ? (
-            <div>
-              <div className="table-container">
-                <div className="table-row">
-                  <button className="table-cell">
-                    <span role="img" aria-label="help" className="icon">
-                      ❓
-                    </span>
-                    Need Help
-                  </button>
-                </div>
-                <div className="table-row">
-                  <button className="table-cell">
-                    <span role="img" aria-label="feedback" className="icon">
-                      💬
-                    </span>
-                    Provide Feedback
-                  </button>
-                </div>
-                <div className="table-row">
-                  <button className="table-cell">
-                    <span role="img" aria-label="community" className="icon">
-                      👥
-                    </span>
-                    Community
-                  </button>
-                </div>
-              </div>
-              <button onClick={deleteTokenHandler} className="logout-button">
-                Logout
-              </button>
-            </div>
-          ) : null}
-        </>
+        renderActiveModule()
       )}
     </div>
   );
