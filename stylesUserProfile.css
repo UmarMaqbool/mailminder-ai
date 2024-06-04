@@ -117,8 +117,13 @@
   margin-left: 20px;
 }
 
-.no-profile,
 .subscribe {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #333;
+}
+.no-profile {
   font-size: 24px;
   font-weight: bold;
   margin: 20px 0;
