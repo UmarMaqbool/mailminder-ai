@@ -8,12 +8,11 @@ module.exports = {
   entry: {
     contentScript: './contentScript.ts',
     background: './background.ts',
-    react: './index.tsx',
-    iframe: './iframe.tsx',
-    infoModel: './infoModel.tsx',
-    tabInfoModel: './tabInfoModel.tsx',
-    auth: './auth.tsx',
-    subscription: './subscription.tsx',
+    react: './public/index.tsx',
+    iframe: './public/iframe.tsx',
+    infoModel: './public/infoModel.tsx',
+    tabInfoModel: './public/tabInfoModel.tsx',
+    auth: './public/auth.tsx',
   },
   output: {
     path: path.resolve('dist'),
@@ -22,33 +21,28 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: './public/index.html',
       filename: 'index.html',
       inject: false,
     }),
     new HtmlWebpackPlugin({
-      template: './iframe.html',
+      template: './public/iframe.html',
       filename: 'iframe.html',
       inject: false,
     }),
     new HtmlWebpackPlugin({
-      template: './infoModel.html',
+      template: './public/infoModel.html',
       filename: 'infoModel.html',
       inject: false,
     }),
     new HtmlWebpackPlugin({
-      template: './tabInfoModel.html',
+      template: './public/tabInfoModel.html',
       filename: 'tabInfoModel.html',
       inject: false,
     }),
     new HtmlWebpackPlugin({
-      template: './auth.html',
+      template: './public/auth.html',
       filename: 'auth.html',
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      template: './subscription.html',
-      filename: 'subscription.html',
       inject: false,
     }),
     new CopyPlugin({
@@ -58,24 +52,8 @@ module.exports = {
           to: path.resolve('dist'),
         },
         {
-          from: path.resolve('stylesContentScript.css'),
-          to: path.resolve('dist'),
-        },
-        {
-          from: path.resolve('stylesMainModel.css'),
-          to: path.resolve('dist'),
-        },
-        {
-          from: path.resolve('stylesUserProfile.css'),
-          to: path.resolve('dist'),
-        },
-        {
-          from: path.resolve('stylesSubscriptionModel.css'),
-          to: path.resolve('dist'),
-        },
-        {
-          from: path.resolve('stylesApp.css'),
-          to: path.resolve('dist'),
+          from: path.resolve('styles'),
+          to: path.resolve('dist/styles'),
         },
         {
           from: path.resolve('icons'),

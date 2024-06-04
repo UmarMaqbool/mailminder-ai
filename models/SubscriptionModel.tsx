@@ -1,6 +1,6 @@
 import React from 'react';
 import { IoMdCheckmark } from 'react-icons/io';
-import './stylesSubscriptionModel.css';
+import '../styles/stylesSubscriptionModel.css';
 
 const featuresFree = [
   'Suggestions',

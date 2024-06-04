@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import './stylesAuthModel.css';
-import { getAuthToken } from './background';
+import '../styles/stylesAuthModel.css';
+import { getAuthToken } from '../background';
 
 const AuthModel: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);

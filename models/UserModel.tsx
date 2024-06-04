@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import './stylesUserProfile.css';
+import '../styles/stylesUserProfile.css';
 import { RiContactsLine } from 'react-icons/ri';
 import { CiStar } from 'react-icons/ci';
-import { getAuthToken } from './background';
 import SubscriptionModel from './SubscriptionModel';
+import { getAuthToken } from '../background';
 
 interface ProfileInfo {
   names?: { displayName: string }[];
@@ -11,7 +11,7 @@ interface ProfileInfo {
   photos?: { url: string }[];
 }
 
-const UserProfile: React.FC = () => {
+const UserModel: React.FC = () => {
   const [responseText, setResponseText] = useState<ProfileInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeModule, setActiveModule] = useState<string>('Profile');
@@ -243,4 +243,4 @@ const UserProfile: React.FC = () => {
   );
 };
 
-export default UserProfile;
+export default UserModel;
