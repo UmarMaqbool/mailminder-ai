@@ -1,11 +1,15 @@
 .model-container {
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  
-  .back-button {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
 
-  }
-  
+.back-button {
+  background: none;
+  border: none;
+  color: rgb(134, 14, 14);
+  cursor: pointer;
+  font-size: 20px;
+  margin-bottom: 10px;
+}

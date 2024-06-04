@@ -6,7 +6,9 @@ const AuthModel: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const useRefState = useRef(false);
 
-  const LoadingChatBubble = ({ size }) => {
+  const LoadingChatBubble: React.FC<{ size: 'large' | 'small' }> = ({
+    size,
+  }) => {
     const bubbleStyle = {
       width: size === 'large' ? '85%' : '60%',
       height: '25px',
@@ -42,14 +44,22 @@ const AuthModel: React.FC = () => {
         },
       }
     );
+    const profileInfo = await response.json();
+    await fetch('http://localhost:5000/api/profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileInfo),
+    });
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return response.json();
+    return profileInfo;
   };
 
-  const handleGoogleButton = () => {
-    generateResponse();
+  const handleGoogleButton = async () => {
+    await generateResponse();
     setTimeout(() => {
       chrome.runtime.sendMessage({ action: 'closeIframe' });
     }, 1000);
@@ -69,6 +79,7 @@ const AuthModel: React.FC = () => {
               width="32px"
               height="32px"
               style={{ borderRadius: '50%' }}
+              alt="EvolveBay Logo"
             />
             <p className="heading">Sign In</p>
           </div>
@@ -110,7 +121,7 @@ const AuthModel: React.FC = () => {
                 Sign in with Google
               </button>
               <p style={{ margin: '5px' }}>
-                By clicking “Connect with Google”you agree
+                By clicking “Connect with Google” you agree
               </p>
               <p style={{ margin: '0px' }}>
                 to the{' '}
