@@ -41,6 +41,15 @@ const TabUserModel: React.FC = () => {
         }
       );
       const profileInfo = await response.json();
+      const email = profileInfo.emailAddresses?.[0]?.value;
+      if (email) {
+        console.log(
+          'Profile already exists locally. Skipping backend request.'
+        );
+        setResponseText(profileInfo);
+        setLoading(false);
+        return;
+      }
       const backendResponse = await fetch('http://localhost:5000/api/profile', {
         method: 'POST',
         headers: {

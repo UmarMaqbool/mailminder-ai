@@ -17,7 +17,6 @@ export async function getAuthToken(
           console.log('Token:', token);
           resolve(token);
         } else {
-          console.error('Error obtaining token:', chrome.runtime.lastError);
           resolve(undefined);
         }
       }
@@ -53,7 +52,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             token,
           });
       } else {
-        console.error('Error obtaining token:', chrome.runtime.lastError);
+        console.log('Error obtaining token:', chrome.runtime.lastError);
       }
       break;
 
