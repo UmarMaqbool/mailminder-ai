@@ -124,8 +124,9 @@ const addButtonToReply = () => {
           if (iframeExists) {
             chrome.runtime.sendMessage({ action: 'closeIframe' });
           } else {
+            chrome.runtime.sendMessage({ action: 'receiveEmailText' });
             setTimeout(() => {
-              chrome.runtime.sendMessage({ action: 'receiveEmailText' });
+              chrome.runtime.sendMessage({ action: 'executeOnClicker' });
             }, 1000);
           }
         } else {
@@ -254,16 +255,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       '.Am.aiL.aO9.Al.editable.LW-avf.tS-tW'
     );
     if (replyInput) {
-      replyInput.textContent = message.suggestedText;
+      replyInput.textContent = message.suggestion;
     } else {
       console.log('Reply input not found');
     }
-  }
-});
-
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === 'generateEmailText') {
-    const emailText = message.emailText;
   }
 });
 

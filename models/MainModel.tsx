@@ -25,10 +25,9 @@ const MainModel: React.FC = () => {
   useEffect(() => {
     const messageListener = (message: any) => {
       if (
-        message.action == 'receiveEmailText' ||
-        message.action == 'generateEmailText'
+        message.action == 'receiveEmailText'
       ) {
-        const emailText = `Please give a formal reply to this email and don't add prompt like here is you email and all stuff just give me the proper response in a good way \n ${message?.response}\nalso remember not to add Dear [Recipient's Name], or best regards in the reply or any other irrelevant things and make sure the reply should be short and simple not of big length`;
+        const emailText = `Please give a formal reply to this email and don't add prompt like here is you email and all stuff just give me the proper response in a good way \n ${message?.response}\nalso remember not to add Dear [Recipient's Name], or best regards in the reply or any other irrelevant things and make sure the reply should be short and simple not of big length not more that 30 words\n give to the point response not adding additional info`;
         const modifiedEmailText = emailText?.replace('formal', selectedTone);
         if (modifiedEmailText && modifiedEmailText.includes(selectedTone)) {
           generateResponse(modifiedEmailText);
@@ -47,7 +46,7 @@ const MainModel: React.FC = () => {
     const tone = event.target.value;
     setSelectedTone(tone);
     useRefState.current = false;
-    chrome.runtime.sendMessage({ action: 'generateEmailText' });
+    chrome.runtime.sendMessage({ action: 'executeOnClicker' });
   };
 
   const generateResponse = async (modifiedEmailText: string) => {
@@ -55,13 +54,13 @@ const MainModel: React.FC = () => {
       setLoading(true);
       const fetchResponse = async () => {
         const response = await fetch(
-          'https://api.groq.com/openai/v1/chat/completion',
+          'https://openrouter.ai/api/v1/chat/completions',
           {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
               Authorization:
-                'Bearer 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',
+                'Bearer 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',
             },
             body: JSON.stringify({
               messages: [
@@ -70,7 +69,7 @@ const MainModel: React.FC = () => {
                   content: modifiedEmailText,
                 },
               ],
-              model: 'llama3-8b-8192',
+              model: 'gryphe/mythomist-7b:free',
             }),
           }
         );
@@ -117,7 +116,7 @@ const MainModel: React.FC = () => {
     setLoading(true);
     useRefState.current = false;
     chrome.runtime.sendMessage({
-      action: 'generateEmailText',
+      action: 'executeOnClicker',
       selectedTone: selectedTone,
     });
   };

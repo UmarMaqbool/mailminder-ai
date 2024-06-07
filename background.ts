@@ -86,7 +86,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       }
       break;
 
-    case 'generateEmailText':
+
     case 'clickReplyButton':
     case 'suggestedText':
     case 'closeIframe':
