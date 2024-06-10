@@ -76,11 +76,11 @@ const UserModel: React.FC = () => {
       if (backendResponse.ok) {
         console.log('Profile data sent to the backend');
       } else {
-        console.error('Error sending profile data to the backend');
+        console.log('Error sending profile data to the backend');
       }
       setResponseText(profileInfo);
     } catch (error) {
-      console.error('Error fetching profile info:', error);
+      console.log('Error fetching profile info:', error);
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const UserModel: React.FC = () => {
         console.log('No token found.');
       }
     } catch (error) {
-      console.error('Error revoking token:', error);
+      console.log('Error revoking token:', error);
     }
   };
 
@@ -130,13 +130,13 @@ const UserModel: React.FC = () => {
           console.log('User data deleted from the backend');
           setResponseText(null);
         } else {
-          console.error('Error deleting user data from the backend');
+          console.log('Error deleting user data from the backend');
         }
       } catch (error) {
-        console.error('Error deleting user data:', error);
+        console.log('Error deleting user data:', error);
       }
     } else {
-      console.error('No email address available to delete');
+      console.log('No email address available to delete');
     }
   };
 

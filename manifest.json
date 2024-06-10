@@ -29,7 +29,7 @@
   ],
   "host_permissions": ["http://*/*", "https://*/*"],
   "oauth2": {
-    "client_id": "720454154501-7e52g41fjh96acgft572i5cl86n4gr8o.apps.googleusercontent.com",
+    "client_id": "666213716118-v5gmu4jrrbqsrln11kc61002up55teir.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/gmail.readonly",
       "https://www.googleapis.com/auth/gmail.compose",

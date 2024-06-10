@@ -27,7 +27,7 @@ const AuthModel: React.FC = () => {
       setLoading(true);
       await fetchProfileInfo(token);
     } catch (error) {
-      console.error('Error fetching profile info:', error);
+      console.log('Error fetching profile info:', error);
     } finally {
       if (useRefState.current) {
         setLoading(false);
@@ -45,6 +45,12 @@ const AuthModel: React.FC = () => {
       }
     );
     const profileInfo = await response.json();
+    const email = profileInfo.emailAddresses?.[0]?.value;
+    if (email) {
+      console.log('Profile already exists locally. Skipping backend request.');
+      setLoading(false);
+      return;
+    }
     await fetch('http://localhost:5000/api/profile', {
       method: 'POST',
       headers: {

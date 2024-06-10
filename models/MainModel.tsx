@@ -24,9 +24,7 @@ const MainModel: React.FC = () => {
 
   useEffect(() => {
     const messageListener = (message: any) => {
-      if (
-        message.action == 'receiveEmailText'
-      ) {
+      if (message.action == 'receiveEmailText') {
         const emailText = `Please give a formal reply to this email and don't add prompt like here is you email and all stuff just give me the proper response in a good way \n ${message?.response}\nalso remember not to add Dear [Recipient's Name], or best regards in the reply or any other irrelevant things and make sure the reply should be short and simple not of big length not more that 30 words\n give to the point response not adding additional info`;
         const modifiedEmailText = emailText?.replace('formal', selectedTone);
         if (modifiedEmailText && modifiedEmailText.includes(selectedTone)) {
@@ -94,7 +92,7 @@ const MainModel: React.FC = () => {
         return null;
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.log('Error:', error);
       return null;
     } finally {
       setLoading(false);

@@ -10,6 +10,7 @@ export async function getAuthToken(
         scopes: [
           'https://www.googleapis.com/auth/userinfo.email',
           'https://www.googleapis.com/auth/userinfo.profile',
+          'https://www.googleapis.com/auth/gmail.readonly',
         ],
       },
       (token) => {
@@ -39,20 +40,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         const messageDetails = await response.json();
         emailText = messageDetails.snippet;
       } catch (error) {
-        console.error('Error fetching message details:', error);
-      }
-      break;
-
-    case 'authenticateWithGoogle':
-      const token = await getAuthToken();
-      if (token) {
-        if (sender.tab?.id)
-          chrome.tabs.sendMessage(sender.tab.id, {
-            action: 'handleAuthToken',
-            token,
-          });
-      } else {
-        console.log('Error obtaining token:', chrome.runtime.lastError);
+        console.log('Error fetching message details:', error);
       }
       break;
 
@@ -77,15 +65,21 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       break;
       
     case 'executeOnClicker':
+      const token = await getAuthToken();
       const [tab] = await chrome.tabs.query({
         active: true,
         currentWindow: true,
       });
       if (tab && tab.id) {
-        clickHandler();
+        if (token) {
+          chrome.tabs.sendMessage(tab.id, {
+            action: 'getMessageText',
+            token,
+          });
+          clickHandler();
+        }
       }
       break;
-
 
     case 'clickReplyButton':
     case 'suggestedText':
@@ -113,7 +107,7 @@ const clickHandler = async () => {
           action: 'receiveEmailText',
           response: emailText,
         });
-    }, 500);
+    }, 300);
   } else {
     console.log('API response does not contain result or No Active Tab');
   }

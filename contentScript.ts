@@ -235,7 +235,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === 'handleAuthToken') {
+  if (message.action === 'getMessageText') {
     const { token } = message;
     const messageElement = document.querySelector('[data-legacy-message-id]');
     if (messageElement) {

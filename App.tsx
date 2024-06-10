@@ -35,7 +35,7 @@ function App() {
       if (useRefState.current) {
         setAuthenticated(false);
       }
-      console.error('Error fetching profile info:', error);
+      console.log('Error fetching profile info:', error);
     } finally {
       if (useRefState.current) {
         setLoading(false);
@@ -103,10 +103,10 @@ function App() {
           });
         }
       } else {
-        console.error('No active tab found');
+        console.log('No active tab found');
       }
     } catch (error) {
-      console.error('Error getting auth token or querying tabs: ', error);
+      console.log('Error getting auth token or querying tabs: ', error);
     }
   };
 
@@ -133,7 +133,7 @@ function App() {
         console.log('No token found.');
       }
     } catch (error) {
-      console.error('Error revoking token:', error);
+      console.log('Error revoking token:', error);
     }
   };
 
