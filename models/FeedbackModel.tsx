@@ -27,7 +27,7 @@ const FeedbackModel: React.FC<FeedbackModelProps> = ({ onBack }) => {
         'PV02uSJkTcSgE5AIf'
       )
       .then((response) => {
-        alert('SUCCESS!' + response.status + response.text);
+        alert('SUCCESS!! ' + response.status);
         setName('');
         setFeedback('');
       })

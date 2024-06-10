@@ -43,7 +43,7 @@ form {
 
 .textarea-field {
   height: 70px;
-  resize: vertical;
+  resize: none;
 }
 
 .submit-button {
