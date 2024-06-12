@@ -50,7 +50,7 @@ const TabUserModel: React.FC = () => {
         setLoading(false);
         return;
       }
-      const backendResponse = await fetch('http://localhost:5000/api/profile', {
+      const backendResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

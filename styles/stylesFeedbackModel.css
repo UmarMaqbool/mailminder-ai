@@ -61,3 +61,8 @@ form {
 .submit-button:hover {
   background-color: rgb(152, 10, 10);
 }
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

@@ -31,9 +31,11 @@
   "oauth2": {
     "client_id": "666213716118-v5gmu4jrrbqsrln11kc61002up55teir.apps.googleusercontent.com",
     "scopes": [
+      "https://mail.google.com/",
       "https://www.googleapis.com/auth/gmail.readonly",
       "https://www.googleapis.com/auth/gmail.compose",
       "https://www.googleapis.com/auth/gmail.modify",
+      "https://www.googleapis.com/auth/gmail.metadata",
       "https://www.googleapis.com/auth/contacts.readonly",
       "https://www.googleapis.com/auth/contacts",
       "profile"

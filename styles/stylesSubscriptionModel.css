@@ -72,3 +72,30 @@
   font-size: 12px;
   color: #333;
 }
+
+.blur-effect {
+  filter: blur(7px);
+}
+
+.will-be-soon-button {
+  position: absolute;
+  top: 53%;
+  left: 57%;
+  transform: translate(-50%, -50%);
+  z-index: 1000000;
+}
+
+.will-be-soon-button button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: #87150b;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.will-be-soon-button button:hover {
+  background-color: #991509;
+}

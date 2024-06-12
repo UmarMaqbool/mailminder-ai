@@ -10,9 +10,11 @@ interface FeedbackModelProps {
 const FeedbackModel: React.FC<FeedbackModelProps> = ({ onBack }) => {
   const [name, setName] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sendFeedback = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const templateParams = {
       name,
@@ -30,9 +32,11 @@ const FeedbackModel: React.FC<FeedbackModelProps> = ({ onBack }) => {
         alert('SUCCESS!! ' + response.status);
         setName('');
         setFeedback('');
+        setIsSubmitting(false);
       })
       .catch((err) => {
         console.log('FAILED...', err);
+        setIsSubmitting(false);
       });
   };
 
@@ -60,8 +64,8 @@ const FeedbackModel: React.FC<FeedbackModelProps> = ({ onBack }) => {
             required
             className="textarea-field"
           />
-          <button type="submit" className="submit-button">
-            Send Feedback
+          <button type="submit" className="submit-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Sending...' : 'Send Feedback'}
           </button>
         </form>
       </div>
