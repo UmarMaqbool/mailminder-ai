@@ -30,9 +30,9 @@ const SubscriptionModel: React.FC = () => {
   return (
     <>
       <div className="will-be-soon-button">
-        <button>Will be Announced Soon</button>
+        {/* <button>Will be Announced Soon</button> */}
       </div>
-      <div className="subscription-container blur-effect">
+      <div className="subscription-container">
         <div className="plan">
           <h2>See magic</h2>
           <h1>Free</h1>

@@ -81,10 +81,10 @@ const AuthModel: React.FC = () => {
         <div className="header">
           <div className="logo-header">
             <img
-              src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+              src="icons/logo_white.png"
               width="32px"
               height="32px"
-              style={{ borderRadius: '50%' }}
+              style={{ marginBottom: '3px' }}
               alt="EvolveBay Logo"
             />
             <p className="heading">Sign In</p>
@@ -127,14 +127,9 @@ const AuthModel: React.FC = () => {
                 Sign in with Google
               </button>
               <p style={{ margin: '5px' }}>
-                By clicking “Connect with Google” you agree
+                By clicking “Sign in with Google” you agree
               </p>
-              <p style={{ margin: '0px' }}>
-                to the{' '}
-                <a href="/terms-of-use" className="link-underline">
-                  Terms of Use
-                </a>
-              </p>
+              <p style={{ margin: '0px' }}>to the Terms of Use</p>
             </>
           )}
         </div>

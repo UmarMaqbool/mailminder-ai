@@ -63,7 +63,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         }
       })();
       break;
-      
+
     case 'executeOnClicker':
       const token = await getAuthToken();
       const [tab] = await chrome.tabs.query({

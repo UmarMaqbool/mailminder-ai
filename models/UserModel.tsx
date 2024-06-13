@@ -65,13 +65,16 @@ const UserModel: React.FC = () => {
         setLoading(false);
         return;
       }
-      const backendResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileInfo),
-      });
+      const backendResponse = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profileInfo),
+        }
+      );
 
       if (backendResponse.ok) {
         console.log('Profile data sent to the backend');
@@ -196,12 +199,12 @@ const UserModel: React.FC = () => {
       <div className="sidebar">
         <div className="logo-header">
           <img
-            src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+            src="icons/logo_white.png"
             height="32px"
             width="32px"
-            style={{ borderRadius: '50%' }}
+            style={{ marginBottom: '3px' }}
           />
-          <p className="heading">Mail Minder</p>
+          <p className="heading">MailMinder</p>
         </div>
         <div
           className={`menu-item ${activeModule === 'Package' ? 'active' : ''}`}

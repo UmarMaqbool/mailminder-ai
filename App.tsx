@@ -156,13 +156,13 @@ function App() {
         <div className="header">
           <div className="logo-header">
             <img
-              src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+              src="icons/logo_white.png"
               height={'28px'}
               width={'28px'}
-              style={{ borderRadius: '50%' }}
+              style={{ marginBottom: '2px' }}
               alt="EvolveBay Logo"
             />
-            <p className="heading">EvolveBay</p>
+            <p className="heading">MailMinder</p>
           </div>
           {authenticated ? (
             <img

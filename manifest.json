@@ -1,21 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Mail Minder",
+  "name": "MailMinder AI",
   "description": "A Chrome extension that enables users to reply to their emails using different tones.",
   "version": "1.0.0",
   "permissions": ["activeTab", "scripting", "tabs", "identity", "storage"],
   "icons": {
-    "16": "icons/icon.jpeg",
-    "48": "icons/icon.jpeg",
-    "128": "icons/icon.jpeg"
+    "16": "icons/logo_white.png",
+    "48": "icons/logo_white.png",
+    "128": "icons/logo_white.png"
   },
   "action": {
     "default_popup": "index.html",
-    "default_title": "Mail Minder",
+    "default_title": "MailMinder AI",
     "default_icon": {
-      "16": "icons/icon.jpeg",
-      "48": "icons/icon.jpeg",
-      "128": "icons/icon.jpeg"
+      "16": "icons/logo_white.png",
+      "48": "icons/logo_white.png",
+      "128": "icons/logo_white.png"
     }
   },
   "background": {
@@ -49,7 +49,12 @@
         "infoModel.html",
         "tabInfoModel.html",
         "auth.html",
-        "subscription.html"
+        "subscription.html",
+        "icons/icon.jpeg",
+        "icons/logo_white.png",
+        "icons/logo_trans.png",
+        "icons/text_logo_white.png",
+        "icons/text_logo_trans.png"
       ],
       "matches": ["<all_urls>"]
     }
