@@ -39,34 +39,28 @@ const AuthModel: React.FC = () => {
     token: string | undefined,
     tokenStatus: boolean
   ) => {
-    const response = await fetch(
-      'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token, tokenStatus }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile info from backend');
       }
-    );
-    const profileInfo = await response.json();
-    const email = profileInfo.emailAddresses?.[0]?.value;
-    if (!email) {
-      console.log('Email not found in profile info.');
+
+      const profileInfo = await response.json();
+      return profileInfo;
+    } catch (error) {
+      console.error('Error in fetchProfileInfoFromBackend:', error);
       setLoading(false);
-      return;
-    }
-    profileInfo.tokenStatus = tokenStatus;
-    await fetch('http://localhost:5000/api/profile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(profileInfo),
-    });
-    if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    setLoading(false);
-    return profileInfo;
   };
 
   const handleGoogleButton = async () => {

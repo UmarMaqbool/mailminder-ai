@@ -29,7 +29,7 @@ function App() {
       const response = await fetchProfileInfo(token, true);
       if (useRefState.current) {
         setAuthenticated(true);
-        setResponseText(response.photos?.[0]?.url || 'default-photo-url');
+        setResponseText(response.profileImage || 'default-photo-url');
       }
     } catch (error) {
       if (useRefState.current) {
@@ -43,36 +43,32 @@ function App() {
     }
   };
 
-  const fetchProfileInfo = async (token: string | undefined,
-    tokenStatus: boolean) => {
-    const response = await fetch(
-      'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const fetchProfileInfo = async (
+    token: string | undefined,
+    tokenStatus: boolean
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token, tokenStatus }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile info from backend');
       }
-    );
-    const profileInfo = await response.json();
-    const email = profileInfo.emailAddresses?.[0]?.value;
-    if (!email) {
-      console.log('Email not found in profile info.');
+
+      const profileInfo = await response.json();
+      return profileInfo;
+    } catch (error) {
+      console.error('Error in fetchProfileInfoFromBackend:', error);
       setLoading(false);
-      return;
-    }
-    profileInfo.tokenStatus = tokenStatus;
-    
-    await fetch(`http://localhost:5000/api/profile`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(profileInfo),
-    });
-    if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return profileInfo;
   };
 
   const onProfileHandler = async () => {
@@ -119,8 +115,8 @@ function App() {
     }
   };
 
-  const onGoogleButtonHandler = () => {
-    generateResponse();
+  const onGoogleButtonHandler = async () => {
+    await generateResponse();
   };
 
   const deleteTokenHandler = async () => {
@@ -181,7 +177,11 @@ function App() {
               onClick={onProfileHandler}
             />
           ) : (
-            <button onClick={onGoogleButtonHandler} className="google-button">
+            <button
+              onClick={onGoogleButtonHandler}
+              className="google-button"
+              disabled={loading}
+            >
               <img
                 src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
                 alt="Google Logo"
