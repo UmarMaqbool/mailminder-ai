@@ -50,16 +50,13 @@ const TabUserModel: React.FC = () => {
         setLoading(false);
         return;
       }
-      const backendResponse = await fetch(
-        `http://localhost:5000/api/profile`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(profileInfo),
-        }
-      );
+      const backendResponse = await fetch(`http://localhost:5000/api/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileInfo),
+      });
 
       if (backendResponse.ok) {
         console.log('Profile data sent to the backend');

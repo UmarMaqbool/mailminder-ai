@@ -25,7 +25,7 @@ const AuthModel: React.FC = () => {
     try {
       const token = await getAuthToken();
       setLoading(true);
-      await fetchProfileInfo(token);
+      await fetchProfileInfo(token, true);
     } catch (error) {
       console.log('Error fetching profile info:', error);
     } finally {
@@ -35,7 +35,10 @@ const AuthModel: React.FC = () => {
     }
   };
 
-  const fetchProfileInfo = async (token: string | undefined) => {
+  const fetchProfileInfo = async (
+    token: string | undefined,
+    tokenStatus: boolean
+  ) => {
     const response = await fetch(
       'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
       {
@@ -46,11 +49,12 @@ const AuthModel: React.FC = () => {
     );
     const profileInfo = await response.json();
     const email = profileInfo.emailAddresses?.[0]?.value;
-    if (email) {
-      console.log('Profile already exists locally. Skipping backend request.');
+    if (!email) {
+      console.log('Email not found in profile info.');
       setLoading(false);
       return;
     }
+    profileInfo.tokenStatus = tokenStatus;
     await fetch('http://localhost:5000/api/profile', {
       method: 'POST',
       headers: {
@@ -61,6 +65,7 @@ const AuthModel: React.FC = () => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
+    setLoading(false);
     return profileInfo;
   };
 
@@ -118,7 +123,11 @@ const AuthModel: React.FC = () => {
           ) : (
             <>
               <h2>Sign in to unlock the magic</h2>
-              <button onClick={handleGoogleButton} className="google-button">
+              <button
+                onClick={handleGoogleButton}
+                className="google-button"
+                disabled={loading}
+              >
                 <img
                   src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
                   alt="Google Logo"
