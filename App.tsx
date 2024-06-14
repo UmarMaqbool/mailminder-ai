@@ -53,7 +53,7 @@ function App() {
       }
     );
     const profileInfo = await response.json();
-    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile`, {
+    await fetch(`http://localhost:5000/api/profile`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
