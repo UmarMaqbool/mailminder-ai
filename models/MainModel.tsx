@@ -1,12 +1,14 @@
 import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { TbReload } from 'react-icons/tb';
 import '../styles/stylesMainModel.css';
+import { getAuthToken } from '../background';
 const MainModel: React.FC = () => {
   const [responseText, setResponseText] = useState<{ text: string }[] | null>(
     null
   );
   const [selectedTone, setSelectedTone] = useState<string>('formal');
   const [loading, setLoading] = useState<boolean>(true);
+  const [apiCalls, setApiCalls] = useState<number>(0);
   const useRefState = useRef(false);
 
   const LoadingChatBubble = ({ size }) => {
@@ -45,6 +47,21 @@ const MainModel: React.FC = () => {
     setSelectedTone(tone);
     useRefState.current = false;
     chrome.runtime.sendMessage({ action: 'executeOnClicker' });
+  };
+
+  const updateProfileApiCalls = async () => {
+    const token = await getAuthToken();
+    try {
+      await fetch(`http://localhost:5000/api/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, increment: 3 }),
+      });
+    } catch (error) {
+      console.error('Failed to update API calls:', error);
+    }
   };
 
   const generateResponse = async (modifiedEmailText: string) => {
@@ -89,6 +106,7 @@ const MainModel: React.FC = () => {
 
       if (validResponses.length === 3) {
         setResponseText(validResponses);
+        await updateProfileApiCalls();
       } else {
         return null;
       }

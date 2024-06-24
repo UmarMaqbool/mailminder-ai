@@ -26,7 +26,7 @@ function App() {
     try {
       const token = await getAuthToken();
       setLoading(true);
-      const response = await fetchProfileInfo(token, true);
+      const response = await fetchProfileInfo(token, true, 0);
       if (useRefState.current) {
         setAuthenticated(true);
         setResponseText(response.profileImage || 'default-photo-url');
@@ -45,7 +45,8 @@ function App() {
 
   const fetchProfileInfo = async (
     token: string | undefined,
-    tokenStatus: boolean
+    tokenStatus: boolean,
+    apiCalls: Number
   ) => {
     try {
       const response = await fetch(
@@ -55,7 +56,7 @@ function App() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token, tokenStatus }),
+          body: JSON.stringify({ token, tokenStatus, apiCalls }),
         }
       );
       if (!response.ok) {

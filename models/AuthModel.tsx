@@ -25,7 +25,7 @@ const AuthModel: React.FC = () => {
     try {
       const token = await getAuthToken();
       setLoading(true);
-      await fetchProfileInfo(token, true);
+      await fetchProfileInfo(token, true, 0);
     } catch (error) {
       console.log('Error fetching profile info:', error);
     } finally {
@@ -37,7 +37,8 @@ const AuthModel: React.FC = () => {
 
   const fetchProfileInfo = async (
     token: string | undefined,
-    tokenStatus: boolean
+    tokenStatus: boolean,
+    apiCalls: Number
   ) => {
     try {
       const response = await fetch(
@@ -47,7 +48,7 @@ const AuthModel: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token, tokenStatus }),
+          body: JSON.stringify({ token, tokenStatus, apiCalls }),
         }
       );
       if (!response.ok) {
