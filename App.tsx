@@ -45,18 +45,18 @@ function App() {
 
   const fetchProfileInfo = async (
     token: string | undefined,
-    tokenStatus: boolean,
+    status: boolean,
     apiCalls: Number
   ) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        `http://localhost:5000/api/profile`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token, tokenStatus, apiCalls }),
+          body: JSON.stringify({ token, status, apiCalls }),
         }
       );
       if (!response.ok) {

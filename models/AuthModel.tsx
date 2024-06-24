@@ -37,7 +37,7 @@ const AuthModel: React.FC = () => {
 
   const fetchProfileInfo = async (
     token: string | undefined,
-    tokenStatus: boolean,
+    status: boolean,
     apiCalls: Number
   ) => {
     try {
@@ -48,7 +48,7 @@ const AuthModel: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token, tokenStatus, apiCalls }),
+          body: JSON.stringify({ token, status, apiCalls }),
         }
       );
       if (!response.ok) {

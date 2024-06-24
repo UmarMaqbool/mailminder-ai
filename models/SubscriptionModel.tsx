@@ -8,7 +8,7 @@ interface User {
   name: string;
   emailAddress: string;
   photoUrl: string;
-  tokenStatus: boolean;
+  status: boolean;
   apiCalls: number;
   subscriptionPlan: string;
 }
