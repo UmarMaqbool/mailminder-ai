@@ -39,8 +39,8 @@ const featuresYearly = [
 
 const SubscriptionModel: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentPlan, setCurrentPlan] = useState('free');
-
+  const [currentPlan, setCurrentPlan] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
   const fetchProfileInfo = async (): Promise<string | undefined> => {
     const token = await getAuthToken();
     const response = await fetch(
@@ -61,7 +61,7 @@ const SubscriptionModel: React.FC = () => {
       const email = await fetchProfileInfo();
       try {
         const response = await fetch(
-          `http://localhost:5000/api/profile?email=${email}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/profile?email=${email}`,
           {
             method: 'GET',
             headers: {
@@ -77,8 +77,27 @@ const SubscriptionModel: React.FC = () => {
         const data = await response.json();
         setCurrentUser(data);
         setCurrentPlan(data.subscriptionPlan);
+        const subscriptionResponse = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}/api/subscription/${data._id}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+
+        if (!subscriptionResponse.ok) {
+          throw new Error('Failed to fetch subscription plan');
+        }
+
+        const { subscriptionPlan } = await subscriptionResponse.json();
+        console.log(subscriptionPlan, 'SUB PLAN::::');
+        setCurrentPlan(subscriptionPlan);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching profile:', error);
+        setLoading(false);
       }
     };
 
@@ -86,27 +105,35 @@ const SubscriptionModel: React.FC = () => {
   }, []);
 
   const handlePlanChange = async (plan: React.SetStateAction<string>) => {
+    if (!currentUser) {
+      console.error('User data not available');
+      return;
+    }
     try {
-      const response = await fetch('http://localhost:5000/api/subscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: currentUser?._id, plan }),
-      });
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/subscription`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: currentUser._id, plan }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to update subscription');
       }
 
-      const result = await response.json();
       setCurrentPlan(plan);
-      console.log(result.message);
+      setLoading(false);
+      const result = await response.json();
     } catch (error) {
       console.error('Error updating subscription:', error);
+      setLoading(false);
     }
   };
-
   return (
     <>
       <div className="will-be-soon-button">
@@ -119,13 +146,21 @@ const SubscriptionModel: React.FC = () => {
           <div style={{ height: '25px' }}></div>
           <p>Basic Reply suggestions and tone adjustment</p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <button
-              className="current-plan-button"
-              disabled={currentPlan === 'free'}
-              onClick={() => handlePlanChange('free')}
-            >
-              {currentPlan === 'free' ? 'Current plan' : 'Select Free'}
-            </button>
+            {loading ? (
+              <div className="loader"></div>
+            ) : (
+              <button
+                className="get-unlimited-button"
+                style={{
+                  backgroundColor: currentPlan === 'free' ? 'gray' : '#87150b',
+                  cursor: currentPlan === 'free' ? 'not-allowed' : 'pointer',
+                }}
+                disabled={currentPlan === 'free'}
+                onClick={() => handlePlanChange('free')}
+              >
+                {currentPlan === 'free' ? 'Current plan' : 'Select Free'}
+              </button>
+            )}
           </div>
           <ul
             style={{
@@ -151,13 +186,22 @@ const SubscriptionModel: React.FC = () => {
           <div style={{ height: '25px' }}></div>
           <p>Say goodbye to reply limits with our unlimited plan</p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <button
-              className="get-unlimited-button"
-              disabled={currentPlan === 'monthly'}
-              onClick={() => handlePlanChange('monthly')}
-            >
-              {currentPlan === 'monthly' ? 'Current plan' : 'Get Unlimited'}
-            </button>
+            {loading ? (
+              <div className="loader"></div>
+            ) : (
+              <button
+                className="get-unlimited-button"
+                style={{
+                  backgroundColor:
+                    currentPlan === 'monthly' ? 'gray' : '#87150b',
+                  cursor: currentPlan === 'monthly' ? 'not-allowed' : 'pointer',
+                }}
+                disabled={currentPlan === 'monthly'}
+                onClick={() => handlePlanChange('monthly')}
+              >
+                {currentPlan === 'monthly' ? 'Current plan' : 'Get Unlimited'}
+              </button>
+            )}
           </div>
           <ul
             style={{
@@ -189,13 +233,22 @@ const SubscriptionModel: React.FC = () => {
           </div>
           <p>Say goodbye to reply limits with our unlimited plan</p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <button
-              className="get-unlimited-button"
-              disabled={currentPlan === 'yearly'}
-              onClick={() => handlePlanChange('yearly')}
-            >
-              {currentPlan === 'yearly' ? 'Current plan' : 'Get Unlimited'}
-            </button>
+            {loading ? (
+              <div className="loader"></div>
+            ) : (
+              <button
+                className="get-unlimited-button"
+                style={{
+                  backgroundColor:
+                    currentPlan === 'yearly' ? 'gray' : '#87150b',
+                  cursor: currentPlan === 'yearly' ? 'not-allowed' : 'pointer',
+                }}
+                disabled={currentPlan === 'yearly'}
+                onClick={() => handlePlanChange('yearly')}
+              >
+                {currentPlan === 'yearly' ? 'Current plan' : 'Get Unlimited'}
+              </button>
+            )}
           </div>
           <ul
             style={{
