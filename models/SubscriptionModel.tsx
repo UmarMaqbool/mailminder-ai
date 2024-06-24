@@ -1,6 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoMdCheckmark } from 'react-icons/io';
 import '../styles/stylesSubscriptionModel.css';
+import { getAuthToken } from '../background';
+
+interface User {
+  _id: string;
+  name: string;
+  emailAddress: string;
+  photoUrl: string;
+  tokenStatus: boolean;
+  apiCalls: number;
+  subscriptionPlan: string;
+}
 
 const featuresFree = [
   'Suggestions',
@@ -27,10 +38,79 @@ const featuresYearly = [
 ];
 
 const SubscriptionModel: React.FC = () => {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentPlan, setCurrentPlan] = useState('free');
+
+  const fetchProfileInfo = async (): Promise<string | undefined> => {
+    const token = await getAuthToken();
+    const response = await fetch(
+      'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const profileInfo = await response.json();
+    return profileInfo.emailAddresses?.[0]?.value;
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const authToken = await getAuthToken();
+      const email = await fetchProfileInfo();
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/profile?email=${email}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile');
+        }
+
+        const data = await response.json();
+        setCurrentUser(data);
+        setCurrentPlan(data.subscriptionPlan);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handlePlanChange = async (plan: React.SetStateAction<string>) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: currentUser?._id, plan }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update subscription');
+      }
+
+      const result = await response.json();
+      setCurrentPlan(plan);
+      console.log(result.message);
+    } catch (error) {
+      console.error('Error updating subscription:', error);
+    }
+  };
+
   return (
     <>
       <div className="will-be-soon-button">
-        {/* <button>Will be Announced Soon</button> */}
+        {/* <button>Will Be Added Soon</button> */}
       </div>
       <div className="subscription-container">
         <div className="plan">
@@ -39,8 +119,12 @@ const SubscriptionModel: React.FC = () => {
           <div style={{ height: '25px' }}></div>
           <p>Basic Reply suggestions and tone adjustment</p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <button className="current-plan-button" disabled>
-              Current plan
+            <button
+              className="current-plan-button"
+              disabled={currentPlan === 'free'}
+              onClick={() => handlePlanChange('free')}
+            >
+              {currentPlan === 'free' ? 'Current plan' : 'Select Free'}
             </button>
           </div>
           <ul
@@ -67,7 +151,13 @@ const SubscriptionModel: React.FC = () => {
           <div style={{ height: '25px' }}></div>
           <p>Say goodbye to reply limits with our unlimited plan</p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <button className="get-unlimited-button">Get Unlimited</button>
+            <button
+              className="get-unlimited-button"
+              disabled={currentPlan === 'monthly'}
+              onClick={() => handlePlanChange('monthly')}
+            >
+              {currentPlan === 'monthly' ? 'Current plan' : 'Get Unlimited'}
+            </button>
           </div>
           <ul
             style={{
@@ -99,7 +189,13 @@ const SubscriptionModel: React.FC = () => {
           </div>
           <p>Say goodbye to reply limits with our unlimited plan</p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <button className="get-unlimited-button">Get Unlimited</button>
+            <button
+              className="get-unlimited-button"
+              disabled={currentPlan === 'yearly'}
+              onClick={() => handlePlanChange('yearly')}
+            >
+              {currentPlan === 'yearly' ? 'Current plan' : 'Get Unlimited'}
+            </button>
           </div>
           <ul
             style={{
