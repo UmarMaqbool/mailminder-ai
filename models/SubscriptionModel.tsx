@@ -92,7 +92,6 @@ const SubscriptionModel: React.FC = () => {
         }
 
         const { subscriptionPlan } = await subscriptionResponse.json();
-        console.log(subscriptionPlan, 'SUB PLAN::::');
         setCurrentPlan(subscriptionPlan);
         setLoading(false);
       } catch (error) {
@@ -104,7 +103,7 @@ const SubscriptionModel: React.FC = () => {
     fetchProfile();
   }, []);
 
-  const handlePlanChange = async (plan: React.SetStateAction<string>) => {
+  const handlePlanChange = async (plan: string) => {
     if (!currentUser) {
       console.error('User data not available');
       return;
@@ -112,7 +111,7 @@ const SubscriptionModel: React.FC = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/subscription`,
+        `http://localhost:5000/api/subscription`,
         {
           method: 'POST',
           headers: {
@@ -126,9 +125,9 @@ const SubscriptionModel: React.FC = () => {
         throw new Error('Failed to update subscription');
       }
 
-      setCurrentPlan(plan);
+      const result = await response.json();      
+      setCurrentPlan(result.subscription.plan);
       setLoading(false);
-      const result = await response.json();
     } catch (error) {
       console.error('Error updating subscription:', error);
       setLoading(false);
