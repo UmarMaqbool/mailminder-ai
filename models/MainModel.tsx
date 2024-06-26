@@ -79,9 +79,11 @@ const MainModel: React.FC = () => {
       );
       const data = await response.json();
 
-      if (!data.success) {
+      console.log(data, 'DATA FROM UPDATE API:::::');
+      if (!data.ok) {
         throw new Error(data.message || 'Failed to update API calls');
       }
+      return data;
     } catch (error) {
       console.error('Failed to update API calls:', error);
     }
@@ -90,6 +92,14 @@ const MainModel: React.FC = () => {
   const generateResponse = async (modifiedEmailText: string) => {
     try {
       setLoading(true);
+      const updateApiCountResponse = await updatePlanApiCounts();
+      if (!updateApiCountResponse?.ok) {
+        setResponseText([
+          { text: 'Please update your plan to continue using the service.' },
+        ]);
+        setLoading(false);
+        return;
+      }
       const fetchResponse = async () => {
         const response = await fetch(
           'https://openrouter.ai/api/v1/chat/completions',
@@ -130,7 +140,6 @@ const MainModel: React.FC = () => {
       if (validResponses.length === 3) {
         setResponseText(validResponses);
         await updateProfileApiCalls();
-        await updatePlanApiCounts();
       } else {
         return null;
       }
