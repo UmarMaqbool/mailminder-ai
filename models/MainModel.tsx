@@ -2,13 +2,14 @@ import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { TbReload } from 'react-icons/tb';
 import '../styles/stylesMainModel.css';
 import { getAuthToken } from '../background';
+import { getUserInfo } from '../utils/auth';
 const MainModel: React.FC = () => {
   const [responseText, setResponseText] = useState<{ text: string }[] | null>(
     null
   );
   const [selectedTone, setSelectedTone] = useState<string>('formal');
   const [loading, setLoading] = useState<boolean>(true);
-  const [apiCalls, setApiCalls] = useState<number>(0);
+  const user = getUserInfo();
   const useRefState = useRef(false);
 
   const LoadingChatBubble = ({ size }) => {
@@ -52,13 +53,35 @@ const MainModel: React.FC = () => {
   const updateProfileApiCalls = async () => {
     const token = await getAuthToken();
     try {
-      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile`, {
+      await fetch(`http://localhost:5000/api/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ token, increment: 3 }),
       });
+    } catch (error) {
+      console.error('Failed to update API calls:', error);
+    }
+  };
+
+  const updatePlanApiCounts = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/subscription/updateApiCount`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user?.id, increment: 3 }),
+        }
+      );
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to update API calls');
+      }
     } catch (error) {
       console.error('Failed to update API calls:', error);
     }
@@ -107,6 +130,7 @@ const MainModel: React.FC = () => {
       if (validResponses.length === 3) {
         setResponseText(validResponses);
         await updateProfileApiCalls();
+        await updatePlanApiCounts();
       } else {
         return null;
       }
