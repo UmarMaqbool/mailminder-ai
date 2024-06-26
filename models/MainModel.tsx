@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { TbReload } from 'react-icons/tb';
 import '../styles/stylesMainModel.css';
-import { getAuthToken } from '../background';
 import { getUserInfo } from '../utils/auth';
 const MainModel: React.FC = () => {
   const [responseText, setResponseText] = useState<{ text: string }[] | null>(
@@ -44,6 +43,7 @@ const MainModel: React.FC = () => {
   }, [selectedTone]);
 
   const handleToneChange = async (event: ChangeEvent<HTMLSelectElement>) => {
+    setLoading(true);
     const tone = event.target.value;
     setSelectedTone(tone);
     useRefState.current = false;
@@ -51,14 +51,13 @@ const MainModel: React.FC = () => {
   };
 
   const updateProfileApiCalls = async () => {
-    const token = await getAuthToken();
     try {
-      await fetch(`http://localhost:5000/api/profile`, {
+      await fetch(`http://localhost:5000/api/profile/updateApiCount`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token, increment: 3 }),
+        body: JSON.stringify({ userId: user?.id, increment: 3 }),
       });
     } catch (error) {
       console.error('Failed to update API calls:', error);
@@ -92,14 +91,6 @@ const MainModel: React.FC = () => {
   const generateResponse = async (modifiedEmailText: string) => {
     try {
       setLoading(true);
-      const updateApiCountResponse = await updatePlanApiCounts();
-      if (!updateApiCountResponse?.ok) {
-        setResponseText([
-          { text: 'Please update your plan to continue using the service.' },
-        ]);
-        setLoading(false);
-        return;
-      }
       const fetchResponse = async () => {
         const response = await fetch(
           'https://openrouter.ai/api/v1/chat/completions',
@@ -140,6 +131,14 @@ const MainModel: React.FC = () => {
       if (validResponses.length === 3) {
         setResponseText(validResponses);
         await updateProfileApiCalls();
+        const updateApiCountResponse = await updatePlanApiCounts();
+        if (!updateApiCountResponse?.ok) {
+          setResponseText([
+            { text: 'Please update your plan to continue using the service.' },
+          ]);
+          setLoading(false);
+          return;
+        }
       } else {
         return null;
       }
