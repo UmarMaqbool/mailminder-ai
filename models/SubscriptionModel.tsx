@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IoMdCheckmark } from 'react-icons/io';
 import '../styles/stylesSubscriptionModel.css';
+import { getUserInfo } from '../utils/auth';
 import { getAuthToken } from '../background';
 
 interface User {
@@ -38,30 +39,17 @@ const featuresYearly = [
 ];
 
 const SubscriptionModel: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-  const fetchProfileInfo = async (): Promise<string | undefined> => {
-    const token = await getAuthToken();
-    const response = await fetch(
-      'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    const profileInfo = await response.json();
-    return profileInfo.emailAddresses?.[0]?.value;
-  };
+  const user = getUserInfo();
 
   useEffect(() => {
     const fetchProfile = async () => {
       const authToken = await getAuthToken();
-      const email = await fetchProfileInfo();
+
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL}/api/profile?email=${email}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/profile?email=${user?.emailAddress}`,
           {
             method: 'GET',
             headers: {
@@ -75,7 +63,6 @@ const SubscriptionModel: React.FC = () => {
         }
 
         const data = await response.json();
-        setCurrentUser(data);
         setCurrentPlan(data.subscriptionPlan);
         const subscriptionResponse = await fetch(
           `${process.env.REACT_APP_API_BASE_URL}/api/subscription/${data._id}`,
@@ -104,22 +91,19 @@ const SubscriptionModel: React.FC = () => {
   }, []);
 
   const handlePlanChange = async (planTitle: string) => {
-    if (!currentUser) {
+    if (!user?.id) {
       console.error('User data not available');
       return;
     }
     try {
       setLoading(true);
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/subscription`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId: currentUser._id, planTitle }),
-        }
-      );
+      const response = await fetch(`http://localhost:5000/api/subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?.id, planTitle }),
+      });
 
       if (!response.ok) {
         throw new Error('Failed to update subscription');

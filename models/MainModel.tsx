@@ -2,6 +2,7 @@ import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { TbReload } from 'react-icons/tb';
 import '../styles/stylesMainModel.css';
 import { getUserInfo } from '../utils/auth';
+import { getAuthToken } from '../background';
 const MainModel: React.FC = () => {
   const [responseText, setResponseText] = useState<{ text: string }[] | null>(
     null
@@ -90,7 +91,9 @@ const MainModel: React.FC = () => {
 
   const generateResponse = async (modifiedEmailText: string) => {
     try {
+      const token = await getAuthToken();
       setLoading(true);
+      await fetchProfileInfo(token, true, 0);
       const fetchResponse = async () => {
         const response = await fetch(
           'https://openrouter.ai/api/v1/chat/completions',
@@ -147,6 +150,34 @@ const MainModel: React.FC = () => {
       return null;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProfileInfo = async (
+    token: string | undefined,
+    status: boolean,
+    apiCalls: Number
+  ) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, status, apiCalls }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile info from backend');
+      }
+
+      const profileInfo = await response.json();
+      const { id, emailAddress } = profileInfo;
+      localStorage.setItem('user', JSON.stringify({ id, emailAddress }));
+      return profileInfo;
+    } catch (error) {
+      console.error('Error in fetchProfileInfoFromBackend:', error);
+      setLoading(false);
+      throw new Error('Network response was not ok');
     }
   };
 
