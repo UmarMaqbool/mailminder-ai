@@ -115,7 +115,7 @@ const UserProfile: React.FC = () => {
         );
 
         if (backendResponse.ok) {
-          deleteTokenHandler();
+          await deleteTokenHandler();
           chrome.runtime.sendMessage({ action: 'closeIframe' });
           console.log('User data deleted from the backend');
           setResponseText(null);
