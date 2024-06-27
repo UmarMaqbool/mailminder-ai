@@ -13,6 +13,7 @@ module.exports = {
     infoModel: './infoModel.tsx',
     tabInfoModel: './tabInfoModel.tsx',
     auth: './auth.tsx',
+    subscription: './subscription.tsx',
   },
   output: {
     path: path.resolve('dist'),
@@ -45,6 +46,11 @@ module.exports = {
       filename: 'auth.html',
       inject: false,
     }),
+    new HtmlWebpackPlugin({
+      template: './subscription.html',
+      filename: 'subscription.html',
+      inject: false,
+    }),
     new CopyPlugin({
       patterns: [
         {
@@ -61,6 +67,10 @@ module.exports = {
         },
         {
           from: path.resolve('stylesUserProfile.css'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesSubscriptionModel.css'),
           to: path.resolve('dist'),
         },
         {

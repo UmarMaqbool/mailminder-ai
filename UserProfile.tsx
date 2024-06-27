@@ -3,6 +3,7 @@ import './stylesUserProfile.css';
 import { RiContactsLine } from 'react-icons/ri';
 import { CiStar } from 'react-icons/ci';
 import { getAuthToken } from './background';
+import SubscriptionModel from './SubscriptionModel';
 
 interface ProfileInfo {
   names?: { displayName: string }[];
@@ -136,7 +137,11 @@ const UserProfile: React.FC = () => {
 
   const renderContent = () => {
     if (activeModule === 'Package') {
-      return <div className="subscribe">Subscriptions</div>;
+      return (
+        <div className="subscribe">
+          <SubscriptionModel />
+        </div>
+      );
     }
     if (activeModule === 'Profile') {
       return loading ? (
