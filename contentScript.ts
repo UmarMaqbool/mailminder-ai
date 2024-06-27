@@ -82,9 +82,8 @@ const addButtonToPage = () => {
     const contentWrapper = document.createElement('div');
     contentWrapper.classList.add('contentWrapper');
     const logoImg = document.createElement('img');
-    logoImg.src =
-      'https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I';
-    const buttonText = document.createTextNode('EvolveBay');
+    logoImg.src = chrome.runtime.getURL('icons/logo_white.png');
+    const buttonText = document.createTextNode('MailMinder AI');
     button.addEventListener('click', async function () {
       checkAuthentication().then((response) => {
         if (response?.authenticated) {
@@ -112,8 +111,7 @@ const addButtonToReply = () => {
   const mainSmallDiv = document.querySelector('.J-J5-Ji.btA');
   if (mainSmallDiv && !document.getElementById('myInjectSmallButton')) {
     const button = document.createElement('img');
-    button.src =
-      'https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I';
+    button.src = chrome.runtime.getURL('icons/text_logo_trans.png');
     button.alt = 'icon';
     button.id = 'myInjectSmallButton';
     button.classList.add('myInjectSmallButton');
@@ -124,8 +122,9 @@ const addButtonToReply = () => {
           if (iframeExists) {
             chrome.runtime.sendMessage({ action: 'closeIframe' });
           } else {
+            chrome.runtime.sendMessage({ action: 'receiveEmailText' });
             setTimeout(() => {
-              chrome.runtime.sendMessage({ action: 'receiveEmailText' });
+              chrome.runtime.sendMessage({ action: 'executeOnClicker' });
             }, 1000);
           }
         } else {
@@ -234,7 +233,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === 'handleAuthToken') {
+  if (message.action === 'getMessageText') {
     const { token } = message;
     const messageElement = document.querySelector('[data-legacy-message-id]');
     if (messageElement) {
@@ -254,16 +253,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       '.Am.aiL.aO9.Al.editable.LW-avf.tS-tW'
     );
     if (replyInput) {
-      replyInput.textContent = message.suggestedText;
+      replyInput.textContent = message.suggestion;
     } else {
       console.log('Reply input not found');
     }
-  }
-});
-
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === 'generateEmailText') {
-    const emailText = message.emailText;
   }
 });
 

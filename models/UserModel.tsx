@@ -55,22 +55,35 @@ const UserModel: React.FC = () => {
         }
       );
       const profileInfo = await response.json();
-      const backendResponse = await fetch('http://localhost:5000/api/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileInfo),
-      });
+
+      const email = profileInfo.emailAddresses?.[0]?.value;
+      if (email) {
+        console.log(
+          'Profile already exists locally. Skipping backend request.'
+        );
+        setResponseText(profileInfo);
+        setLoading(false);
+        return;
+      }
+      const backendResponse = await fetch(
+        `http://localhost:5000/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profileInfo),
+        }
+      );
 
       if (backendResponse.ok) {
         console.log('Profile data sent to the backend');
       } else {
-        console.error('Error sending profile data to the backend');
+        console.log('Error sending profile data to the backend');
       }
       setResponseText(profileInfo);
     } catch (error) {
-      console.error('Error fetching profile info:', error);
+      console.log('Error fetching profile info:', error);
     } finally {
       setLoading(false);
     }
@@ -94,7 +107,7 @@ const UserModel: React.FC = () => {
         console.log('No token found.');
       }
     } catch (error) {
-      console.error('Error revoking token:', error);
+      console.log('Error revoking token:', error);
     }
   };
 
@@ -120,13 +133,13 @@ const UserModel: React.FC = () => {
           console.log('User data deleted from the backend');
           setResponseText(null);
         } else {
-          console.error('Error deleting user data from the backend');
+          console.log('Error deleting user data from the backend');
         }
       } catch (error) {
-        console.error('Error deleting user data:', error);
+        console.log('Error deleting user data:', error);
       }
     } else {
-      console.error('No email address available to delete');
+      console.log('No email address available to delete');
     }
   };
 
@@ -186,12 +199,12 @@ const UserModel: React.FC = () => {
       <div className="sidebar">
         <div className="logo-header">
           <img
-            src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+            src="icons/logo_white.png"
             height="32px"
             width="32px"
-            style={{ borderRadius: '50%' }}
+            style={{ marginBottom: '3px' }}
           />
-          <p className="heading">Mail Minder</p>
+          <p className="heading">MailMinder</p>
         </div>
         <div
           className={`menu-item ${activeModule === 'Package' ? 'active' : ''}`}

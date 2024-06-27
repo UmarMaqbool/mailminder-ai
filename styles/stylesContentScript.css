@@ -3,7 +3,7 @@
   background-color: transparent;
   color: #87150b;
   border: 1px solid #87150b;
-  border-radius: 18px;
+  border-radius: 25px;
   font-weight: 500;
   margin-right: 8px;
   cursor: pointer;
@@ -15,7 +15,7 @@
   width: 17px;
   height: 17px;
   margin-right: 5px;
-  border-radius: 50%;
+  margin-bottom: 3px;
 }
 
 #myInjectButton .contentWrapper {
@@ -24,8 +24,8 @@
 }
 
 #myInjectSmallButton {
-  width: 24px;
-  height: 24px;
+  width: 5em;
+  height: 5em;
   border-radius: 20px;
   margin-left: 10px;
   margin-right: 2px;
