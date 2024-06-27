@@ -10,6 +10,8 @@ module.exports = {
     background: './background.ts',
     react: './index.tsx',
     iframe: './iframe.tsx',
+    infoModel: './infoModel.tsx',
+    tabInfoModel: './tabInfoModel.tsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -27,6 +29,16 @@ module.exports = {
       filename: 'iframe.html',
       inject: false,
     }),
+    new HtmlWebpackPlugin({
+      template: './infoModel.html',
+      filename: 'infoModel.html',
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      template: './tabInfoModel.html',
+      filename: 'tabInfoModel.html',
+      inject: false,
+    }),
     new CopyPlugin({
       patterns: [
         {
@@ -36,6 +48,18 @@ module.exports = {
         {
           from: path.resolve('icons'),
           to: path.resolve('dist/icons'),
+        },
+        {
+          from: path.resolve('stylesMainModel.css'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesUserProfile.css'),
+          to: path.resolve('dist'),
+        },
+        {
+          from: path.resolve('stylesTabUserProfile.css'),
+          to: path.resolve('dist'),
         },
       ],
     }),
@@ -55,6 +79,10 @@ module.exports = {
             ],
           },
         },
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },
