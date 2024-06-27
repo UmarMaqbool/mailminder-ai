@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { TbReload } from 'react-icons/tb';
-import './stylesMainModel.css';
+import '../styles/stylesMainModel.css';
 const MainModel: React.FC = () => {
   const [responseText, setResponseText] = useState<{ text: string }[] | null>(
     null

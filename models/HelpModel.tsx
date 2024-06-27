@@ -1,23 +1,23 @@
 import React from 'react';
 import { IoMdArrowRoundBack } from 'react-icons/io';
-import './stylesCommunityModel.css';
+import '../styles/stylesHelpModel.css';
 
-interface FeedbackModelProps {
+interface HelpModelProps {
   onBack: () => void;
 }
 
-const CommunityModel: React.FC<FeedbackModelProps> = ({ onBack }) => {
+const HelpModel: React.FC<HelpModelProps> = ({ onBack }) => {
   return (
     <>
       <button className="back-button" onClick={onBack}>
         <IoMdArrowRoundBack />
       </button>
       <div className="model-container">
-        <h2>Community</h2>
-        <p>Here is your community members</p>
+        <h2>Help</h2>
+        <p>Here you can find help content.</p>
       </div>
     </>
   );
 };
 
-export default CommunityModel;
+export default HelpModel;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getAuthToken } from './background';
-import './stylesApp.css';
-import HelpModel from './HelpModel';
-import FeedbackModel from './FeedbackModel';
-import CommunityModel from './CommunityModel';
+import './styles/stylesApp.css';
+import HelpModel from './models/HelpModel';
+import FeedbackModel from './models/FeedbackModel';
+import CommunityModel from './models/CommunityModel';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
