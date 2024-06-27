@@ -4,16 +4,6 @@ import '../styles/stylesSubscriptionModel.css';
 import { getUserInfo } from '../utils/auth';
 import { getAuthToken } from '../background';
 
-interface User {
-  _id: string;
-  name: string;
-  emailAddress: string;
-  photoUrl: string;
-  status: boolean;
-  apiCalls: number;
-  subscriptionPlan: string;
-}
-
 interface Plan {
   _id: string;
   planTitle: string;
