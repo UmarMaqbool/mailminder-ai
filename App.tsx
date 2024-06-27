@@ -143,17 +143,12 @@ function App() {
               <p className="heading">EvolveBay</p>
             </div>
             {authenticated ? (
-              <>
-                <img
-                  src={responseText || 'default-photo-url'}
-                  alt="Profile"
-                  className="user-pic"
-                  onClick={onProfileHandler}
-                />
-                <button onClick={deleteTokenHandler} className="delete-button">
-                  Delete Token
-                </button>
-              </>
+              <img
+                src={responseText || 'default-photo-url'}
+                alt="Profile"
+                className="user-pic"
+                onClick={onProfileHandler}
+              />
             ) : (
               <button onClick={onGoogleButtonHandler} className="google-button">
                 <img
@@ -161,11 +156,44 @@ function App() {
                   alt="Google Logo"
                   className="google-logo"
                 />
-                Login Google
+                Login
               </button>
             )}
           </div>
           <hr className="head-divider" />
+          {authenticated ? (
+            <div>
+              <div className="table-container">
+                <div className="table-row">
+                  <button className="table-cell">
+                    <span role="img" aria-label="help" className="icon">
+                      ❓
+                    </span>
+                    Need Help
+                  </button>
+                </div>
+                <div className="table-row">
+                  <button className="table-cell">
+                    <span role="img" aria-label="feedback" className="icon">
+                      💬
+                    </span>
+                    Provide Feedback
+                  </button>
+                </div>
+                <div className="table-row">
+                  <button className="table-cell">
+                    <span role="img" aria-label="community" className="icon">
+                      👥
+                    </span>
+                    Community
+                  </button>
+                </div>
+              </div>
+              <button onClick={deleteTokenHandler} className="logout-button">
+                Logout
+              </button>
+            </div>
+          ) : null}
         </>
       )}
     </div>

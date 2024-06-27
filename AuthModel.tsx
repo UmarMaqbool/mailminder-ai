@@ -70,7 +70,7 @@ const AuthModel: React.FC = () => {
               height="32px"
               style={{ borderRadius: '50%' }}
             />
-            <p className="heading">User Profile</p>
+            <p className="heading">Sign In</p>
           </div>
           <div className="tone-header">
             <button
@@ -89,23 +89,36 @@ const AuthModel: React.FC = () => {
           </div>
         </div>
         <hr className="head-divider" />
-        <div className="container">
+        <div className="container-google">
           {loading ? (
             <div>
               <LoadingChatBubble size="large" />
               <LoadingChatBubble size="small" />
               <LoadingChatBubble size="large" />
               <LoadingChatBubble size="small" />
+              <LoadingChatBubble size="small" />
             </div>
           ) : (
-            <button onClick={handleGoogleButton} className="google-button">
-              <img
-                src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
-                alt="Google Logo"
-                className="google-logo"
-              />
-              Sign in with Google
-            </button>
+            <>
+              <h2>Sign in to unlock the magic</h2>
+              <button onClick={handleGoogleButton} className="google-button">
+                <img
+                  src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
+                  alt="Google Logo"
+                  className="google-logo"
+                />
+                Sign in with Google
+              </button>
+              <p style={{ margin: '5px' }}>
+                By clicking “Connect with Google”you agree
+              </p>
+              <p style={{ margin: '0px' }}>
+                to the{' '}
+                <a href="/terms-of-use" className="link-underline">
+                  Terms of Use
+                </a>
+              </p>
+            </>
           )}
         </div>
       </div>

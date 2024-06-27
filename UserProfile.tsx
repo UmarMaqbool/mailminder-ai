@@ -1,14 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './stylesUserProfile.css';
+import { RiContactsLine } from 'react-icons/ri';
+import { CiStar } from 'react-icons/ci';
 import { getAuthToken } from './background';
+
 interface ProfileInfo {
   names?: { displayName: string }[];
   emailAddresses?: { value: string }[];
   photos?: { url: string }[];
 }
+
 const UserProfile: React.FC = () => {
   const [responseText, setResponseText] = useState<ProfileInfo | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [activeModule, setActiveModule] = useState<string>('Profile');
   const useRefState = useRef(false);
 
   const LoadingChatBubble = ({ size }) => {
@@ -96,6 +101,7 @@ const UserProfile: React.FC = () => {
     if (responseText && responseText.emailAddresses?.[0]?.value) {
       const emailAddress = responseText.emailAddresses[0].value;
       try {
+        setLoading(true);
         const backendResponse = await fetch(
           `http://localhost:5000/api/profile`,
           {
@@ -109,6 +115,7 @@ const UserProfile: React.FC = () => {
 
         if (backendResponse.ok) {
           deleteTokenHandler();
+          chrome.runtime.sendMessage({ action: 'closeIframe' });
           console.log('User data deleted from the backend');
           setResponseText(null);
         } else {
@@ -127,18 +134,86 @@ const UserProfile: React.FC = () => {
     chrome.runtime.sendMessage({ action: 'closeIframe' });
   };
 
+  const renderContent = () => {
+    if (activeModule === 'Package') {
+      return <div className="subscribe">Subscriptions</div>;
+    }
+    if (activeModule === 'Profile') {
+      return loading ? (
+        <div>
+          <LoadingChatBubble size="large" />
+          <LoadingChatBubble size="small" />
+          <LoadingChatBubble size="large" />
+          <LoadingChatBubble size="small" />
+        </div>
+      ) : (
+        <div style={{ display: 'flex' }}>
+          {responseText ? (
+            <div className="user-profile-container">
+              <div className="user-info">
+                <p className="user-name">
+                  Name:{' '}
+                  {responseText.names?.[0]?.displayName ||
+                    'No display name available'}
+                </p>
+                <p className="user-email">
+                  Email:{' '}
+                  {responseText.emailAddresses?.[0]?.value ||
+                    'No email available'}
+                </p>
+              </div>
+              <img
+                src={responseText.photos?.[0]?.url || 'default-photo-url'}
+                alt="Profile"
+                className="user-pic"
+              />
+            </div>
+          ) : (
+            <p className="no-profile">No Profile Available</p>
+          )}
+        </div>
+      );
+    }
+  };
+
   return (
-    <div className="container">
-      <div>
+    <div className="tab-container">
+      <div className="sidebar">
+        <div className="logo-header">
+          <img
+            src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
+            height="32px"
+            width="32px"
+            style={{ borderRadius: '50%' }}
+          />
+          <p className="heading">Mail Minder</p>
+        </div>
+        <div
+          className={`menu-item ${activeModule === 'Package' ? 'active' : ''}`}
+          onClick={() => setActiveModule('Package')}
+          style={{ display: 'flex', alignItems: 'center' }}
+        >
+          <CiStar style={{ marginRight: '5px', fontSize: '18px' }} />{' '}
+          Subscriptions
+        </div>
+        <div
+          className={`menu-item ${activeModule === 'Profile' ? 'active' : ''}`}
+          onClick={() => setActiveModule('Profile')}
+          style={{ display: 'flex', alignItems: 'center' }}
+        >
+          <RiContactsLine
+            style={{ marginRight: '8px', fontSize: '15px', marginLeft: '3px' }}
+          />{' '}
+          Profile
+        </div>
+        <button onClick={deleteUserData} className="delete-button">
+          Delete Account
+        </button>
+      </div>
+      <div className="content">
         <div className="header">
-          <div className="logo-header">
-            <img
-              src="https://media.licdn.com/dms/image/D4D0BAQGd8H31h5niqg/company-logo_200_200/0/1712309492132/evolvebay_logo?e=2147483647&v=beta&t=tSYT6EkXf7aP709xw1DbPc41AbobGq6qtM5PC1El__I"
-              width="32px"
-              height="32px"
-              style={{ borderRadius: '50%' }}
-            />
-            <p className="heading">User Profile</p>
+          <div className="profile-header">
+            <p className="heading">Profile</p>
           </div>
           <div className="tone-header">
             <button
@@ -157,45 +232,7 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
         <hr className="head-divider" />
-        <div className="container">
-          {loading ? (
-            <div>
-              <LoadingChatBubble size="large" />
-              <LoadingChatBubble size="small" />
-              <LoadingChatBubble size="large" />
-              <LoadingChatBubble size="small" />
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {responseText ? (
-                <div className="user-profile-container">
-                  <div className="user-info">
-                    <p className="user-name">
-                      Name:{' '}
-                      {responseText.names?.[0]?.displayName ||
-                        'No display name available'}
-                    </p>
-                    <p className="user-email">
-                      Email:{' '}
-                      {responseText.emailAddresses?.[0]?.value ||
-                        'No email available'}
-                    </p>
-                  </div>
-                  <img
-                    src={responseText.photos?.[0]?.url || 'default-photo-url'}
-                    alt="Profile"
-                    className="user-pic"
-                  />
-                  <button onClick={deleteUserData} className="delete-button">
-                    Delete User Data
-                  </button>
-                </div>
-              ) : (
-                <p className="no-profile">No Profile Available</p>
-              )}
-            </div>
-          )}
-        </div>
+        <div className="content-container">{renderContent()}</div>
       </div>
     </div>
   );
