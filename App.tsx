@@ -10,7 +10,9 @@ function App() {
 
   useEffect(() => {
     useRefState.current = true;
-    generateResponse();
+    if (!authenticated) {
+      generateResponse();
+    }
     return () => {
       useRefState.current = false;
     };
@@ -100,20 +102,28 @@ function App() {
     generateResponse();
   };
 
-  const deleteTokenHandler = () => {
-    chrome.identity.getAuthToken({ interactive: false }, (token) => {
+  const deleteTokenHandler = async () => {
+    try {
+      const token = await getAuthToken(false);
       if (token) {
+        await fetch(`https://oauth2.googleapis.com/revoke?token=${token}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
         chrome.identity.removeCachedAuthToken({ token }, () => {
           setAuthenticated(false);
           setResponseText(null);
-          console.log('Token deleted');
+          console.log('Token revoked and deleted');
         });
       } else {
         console.log('No token found.');
       }
-    });
+    } catch (error) {
+      console.error('Error revoking token:', error);
+    }
   };
-  
 
   return (
     <div className="container">
@@ -132,30 +142,30 @@ function App() {
               />
               <p className="heading">EvolveBay</p>
             </div>
+            {authenticated ? (
+              <>
+                <img
+                  src={responseText || 'default-photo-url'}
+                  alt="Profile"
+                  className="user-pic"
+                  onClick={onProfileHandler}
+                />
+                <button onClick={deleteTokenHandler} className="delete-button">
+                  Delete Token
+                </button>
+              </>
+            ) : (
+              <button onClick={onGoogleButtonHandler} className="google-button">
+                <img
+                  src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
+                  alt="Google Logo"
+                  className="google-logo"
+                />
+                Login Google
+              </button>
+            )}
           </div>
           <hr className="head-divider" />
-          {authenticated ? (
-              <>
-              <img
-                src={responseText || 'default-photo-url'}
-                alt="Profile"
-                className="user-pic"
-                onClick={onProfileHandler}
-              />
-              <button onClick={deleteTokenHandler} className="delete-button">
-                Delete Token
-              </button>
-            </>
-          ) : (
-            <button onClick={onGoogleButtonHandler} className="google-button">
-              <img
-                src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
-                alt="Google Logo"
-                className="google-logo"
-              />
-              Sign in with Google
-            </button>
-          )}
         </>
       )}
     </div>

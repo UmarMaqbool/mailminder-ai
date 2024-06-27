@@ -56,6 +56,57 @@ const TabUserProfile: React.FC = () => {
       setLoading(false);
     }
   };
+  const deleteTokenHandler = async () => {
+    try {
+      const token = await getAuthToken(false);
+      if (token) {
+        await fetch(`https://oauth2.googleapis.com/revoke?token=${token}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+        chrome.identity.removeCachedAuthToken({ token }, () => {
+          setResponseText(null);
+          console.log('Token revoked and deleted');
+        });
+      } else {
+        console.log('No token found.');
+      }
+    } catch (error) {
+      console.error('Error revoking token:', error);
+    }
+  };
+
+  const deleteUserData = async () => {
+    if (responseText && responseText.emailAddresses?.[0]?.value) {
+      const emailAddress = responseText.emailAddresses[0].value;
+      try {
+        const backendResponse = await fetch(
+          `http://localhost:5000/api/profile`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ emailAddress }),
+          }
+        );
+
+        if (backendResponse.ok) {
+          deleteTokenHandler();
+          console.log('User data deleted from the backend');
+          setResponseText(null);
+        } else {
+          console.error('Error deleting user data from the backend');
+        }
+      } catch (error) {
+        console.error('Error deleting user data:', error);
+      }
+    } else {
+      console.error('No email address available to delete');
+    }
+  };
 
   return (
     <div className="tab-container">
@@ -96,6 +147,9 @@ const TabUserProfile: React.FC = () => {
                     alt="Profile"
                     className="user-pic"
                   />
+                  <button onClick={deleteUserData} className="delete-button">
+                    Delete User Data
+                  </button>
                 </div>
               ) : (
                 <p className="no-profile">No Profile Available</p>

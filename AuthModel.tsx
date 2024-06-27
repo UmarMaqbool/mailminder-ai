@@ -1,11 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import './stylesAuthModel.css';
 import { getAuthToken } from './background';
-interface ProfileInfo {
-  names?: { displayName: string }[];
-  emailAddresses?: { value: string }[];
-  photos?: { url: string }[];
-}
+
 const AuthModel: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const useRefState = useRef(false);
@@ -23,6 +19,41 @@ const AuthModel: React.FC = () => {
     return <div style={bubbleStyle}></div>;
   };
 
+  const generateResponse = async () => {
+    try {
+      const token = await getAuthToken();
+      setLoading(true);
+      await fetchProfileInfo(token);
+    } catch (error) {
+      console.error('Error fetching profile info:', error);
+    } finally {
+      if (useRefState.current) {
+        setLoading(false);
+      }
+    }
+  };
+
+  const fetchProfileInfo = async (token: string | undefined) => {
+    const response = await fetch(
+      'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  };
+
+  const handleGoogleButton = () => {
+    generateResponse();
+    setTimeout(() => {
+      chrome.runtime.sendMessage({ action: 'closeIframe' });
+    }, 1000);
+  };
   const handleCloseButton = () => {
     useRefState.current = false;
     chrome.runtime.sendMessage({ action: 'closeIframe' });
@@ -67,7 +98,7 @@ const AuthModel: React.FC = () => {
               <LoadingChatBubble size="small" />
             </div>
           ) : (
-            <button className="google-button">
+            <button onClick={handleGoogleButton} className="google-button">
               <img
                 src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
                 alt="Google Logo"
