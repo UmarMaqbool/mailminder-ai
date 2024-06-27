@@ -25,12 +25,9 @@ const UserProfile: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log('CONSOLING FROM PROFILE');
-
     generateResponse();
     const messageListener = (message: any) => {
       useRefState.current = true;
-      console.log(useRefState, 'USE REF STATE:::::');
     };
     chrome.runtime.onMessage.addListener(messageListener);
 
@@ -52,7 +49,6 @@ const UserProfile: React.FC = () => {
         }
       );
       const profileInfo = await response.json();
-      console.log(profileInfo);
       const backendResponse = await fetch('http://localhost:5000/api/profile', {
         method: 'POST',
         headers: {
@@ -60,7 +56,7 @@ const UserProfile: React.FC = () => {
         },
         body: JSON.stringify(profileInfo),
       });
-  
+
       if (backendResponse.ok) {
         console.log('Profile data sent to the backend');
       } else {

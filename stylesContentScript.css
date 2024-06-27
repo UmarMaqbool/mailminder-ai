@@ -1,0 +1,62 @@
+#myInjectButton {
+    padding: 9.5px 16px;
+    background-color: transparent;
+    color: #87150b;
+    border: 1px solid #87150b;
+    border-radius: 18px;
+    font-weight: 500;
+    margin-right: 8px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: .875rem;
+  }
+  
+  #myInjectButton img {
+    width: 17px;
+    height: 17px;
+    margin-right: 5px;
+    border-radius: 50%;
+  }
+  
+  #myInjectButton .contentWrapper {
+    display: flex;
+    align-items: center;
+  }
+  
+  #myInjectSmallButton {
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    margin-left: 10px;
+    margin-right: 2px;
+    cursor: pointer;
+  }
+
+  .custom-iframe {
+    position: absolute;
+    top: 11em;
+    left: 4em;
+    width: 550px;
+    height: 350px;
+    border: none;
+    border-radius: 17px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    z-index: 999999;
+    background-color: white;
+  }
+  .user-profile-iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 55em;
+    height: 20em;
+    border: none;
+    border-radius: 17px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    z-index: 999999;
+    background-color: white;
+  }

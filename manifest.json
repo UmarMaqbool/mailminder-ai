@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Email Reader",
-  "description": "Demo Chrome Extension that uses React and Webpack",
+  "name": "Mail Minder",
+  "description": "A Chrome extension that enables users to reply to their emails using different tones.",
   "version": "1.0.0",
   "permissions": ["activeTab", "scripting", "tabs", "identity", "storage"],
   "icons": {
@@ -11,7 +11,7 @@
   },
   "action": {
     "default_popup": "index.html",
-    "default_title": "Email Reader",
+    "default_title": "Mail Minder",
     "default_icon": {
       "16": "icons/icon.jpeg",
       "48": "icons/icon.jpeg",
@@ -29,7 +29,7 @@
   ],
   "host_permissions": ["http://*/*", "https://*/*"],
   "oauth2": {
-    "client_id": "720454154501-8i4rm9ldrubbfsqe3kcos99n2fir1f3e.apps.googleusercontent.com",
+    "client_id": "720454154501-7e52g41fjh96acgft572i5cl86n4gr8o.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/gmail.readonly",
       "https://www.googleapis.com/auth/gmail.compose",
