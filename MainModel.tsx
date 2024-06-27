@@ -24,13 +24,11 @@ const MainModel: React.FC = () => {
 
   useEffect(() => {
     const messageListener = (message: any) => {
-      if (message.action === 'receiveEmailText' && !useRefState.current) {
-        const emailText = `Please give a formal reply to this email and don't add prompt like here is you email and all stuff just give me the proper response in a good way \n ${message?.response}\nalso remember not to add Dear [Recipient's Name], or best regards in the reply or any other irrelevant things and make sure the reply should be short and simple not of big length`;
-        const modifiedEmailText = emailText?.replace('formal', selectedTone);
-        if (modifiedEmailText && modifiedEmailText.includes(selectedTone)) {
-          generateResponse(modifiedEmailText);
-          useRefState.current = true;
-        }
+      const emailText = `Please give a formal reply to this email and don't add prompt like here is you email and all stuff just give me the proper response in a good way \n ${message?.response}\nalso remember not to add Dear [Recipient's Name], or best regards in the reply or any other irrelevant things and make sure the reply should be short and simple not of big length`;
+      const modifiedEmailText = emailText?.replace('formal', selectedTone);
+      if (modifiedEmailText && modifiedEmailText.includes(selectedTone)) {
+        generateResponse(modifiedEmailText);
+        useRefState.current = true;
       }
     };
     chrome.runtime.onMessage.addListener(messageListener);
@@ -52,13 +50,13 @@ const MainModel: React.FC = () => {
       setLoading(true);
       const fetchResponse = async () => {
         const response = await fetch(
-          'https://openrouter.ai/api/v1/chat/completions',
+          'https://api.groq.com/openai/v1/chat/completions',
           {
             method: 'POST',
             headers: {
               'content-type': 'application/json',
               Authorization:
-                'Bearer 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',
+                'Bearer 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',
             },
             body: JSON.stringify({
               messages: [
@@ -67,8 +65,7 @@ const MainModel: React.FC = () => {
                   content: modifiedEmailText,
                 },
               ],
-              model: 'openai/gpt-3.5-turbo',
-              max_tokens: 200,
+              model: 'llama3-8b-8192',
             }),
           }
         );

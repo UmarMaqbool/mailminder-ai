@@ -8,6 +8,9 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       iframe.classList.add('user-profile-iframe');
       iframe.src = chrome.runtime.getURL('infoModel.html');
       document.body.appendChild(iframe);
+      setTimeout(() => {
+        iframe.classList.add('active');
+      }, 10);
       iUserProfile = true;
       const closeListener = (
         message: { action: string },
@@ -16,14 +19,20 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       ) => {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
+            iframe.classList.remove('active');
+            setTimeout(() => {
+              if (iframe && iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+                iUserProfile = false;
+              }
+            }, 300);
             setTimeout(() => {
               const replyButton = document.querySelector(
                 '.og.T-I-J3'
               ) as HTMLElement | null;
               replyButton?.click();
             }, 10);
-            iframeExists = true;
+            iframeExists = false;
             iUserProfile = false;
           }
         }
@@ -71,9 +80,13 @@ const addButtonToReply = () => {
     button.classList.add('myInjectSmallButton');
     button.addEventListener('click', async function () {
       chrome.runtime.sendMessage({ action: 'authenticateWithGoogle' });
-      iframeExists = false;
-      if (!iframeExists) {
+      chrome.runtime.sendMessage({ action: 'clickReplyButton' });
+      if (iframeExists) {
         chrome.runtime.sendMessage({ action: 'closeIframe' });
+      } else {
+        setTimeout(() => {
+          chrome.runtime.sendMessage({ action: 'receiveEmailText' });
+        }, 1000);
       }
     });
     const firstSpan = mainSmallDiv?.querySelector('span');
@@ -145,6 +158,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       iframe.classList.add('custom-iframe');
       iframe.src = chrome.runtime.getURL('iframe.html');
       document.body.appendChild(iframe);
+      setTimeout(() => {
+        iframe.classList.add('active');
+      }, 10);
       iframeExists = true;
 
       const closeListener = (
@@ -154,8 +170,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       ) => {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
-            iframeExists = true;
+            iframe.classList.remove('active');
+            setTimeout(() => {
+              if (iframe && iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+                iframeExists = false;
+              }
+            }, 300);
+            iframeExists = false;
           }
         }
       };
