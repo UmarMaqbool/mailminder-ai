@@ -107,7 +107,7 @@ const clickHandler = async () => {
           action: 'receiveEmailText',
           response: emailText,
         });
-    }, 300);
+    }, 1000);
   } else {
     console.log('API response does not contain result or No Active Tab');
   }

@@ -141,7 +141,7 @@ const TabUserModel: React.FC = () => {
     }
     if (activeModule === 'Profile') {
       return loading ? (
-        <div className="spinner"></div>
+        <div className="spinnerTab"></div>
       ) : (
         <div style={{ display: 'flex' }}>
           {responseText ? (

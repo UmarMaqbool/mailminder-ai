@@ -45,25 +45,24 @@ function App() {
 
   const fetchProfileInfo = async (
     token: string | undefined,
-    tokenStatus: boolean,
+    status: boolean,
     apiCalls: Number
   ) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token, tokenStatus, apiCalls }),
-        }
-      );
+      const response = await fetch(`http://localhost:5000/api/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, status, apiCalls }),
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch profile info from backend');
       }
 
       const profileInfo = await response.json();
+      const { id, emailAddress } = profileInfo;
+      localStorage.setItem('user', JSON.stringify({ id, emailAddress }));
       return profileInfo;
     } catch (error) {
       console.error('Error in fetchProfileInfoFromBackend:', error);

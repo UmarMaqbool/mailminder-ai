@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { TbReload } from 'react-icons/tb';
 import '../styles/stylesMainModel.css';
+import { getUserInfo } from '../utils/auth';
 import { getAuthToken } from '../background';
 const MainModel: React.FC = () => {
   const [responseText, setResponseText] = useState<{ text: string }[] | null>(
@@ -8,7 +9,7 @@ const MainModel: React.FC = () => {
   );
   const [selectedTone, setSelectedTone] = useState<string>('formal');
   const [loading, setLoading] = useState<boolean>(true);
-  const [apiCalls, setApiCalls] = useState<number>(0);
+  const user = getUserInfo();
   const useRefState = useRef(false);
 
   const LoadingChatBubble = ({ size }) => {
@@ -43,30 +44,63 @@ const MainModel: React.FC = () => {
   }, [selectedTone]);
 
   const handleToneChange = async (event: ChangeEvent<HTMLSelectElement>) => {
+    setLoading(true);
     const tone = event.target.value;
     setSelectedTone(tone);
     useRefState.current = false;
     chrome.runtime.sendMessage({ action: 'executeOnClicker' });
   };
 
-  const updateProfileApiCalls = async () => {
-    const token = await getAuthToken();
+  const updateProfileApiCalls = async (increment: number) => {
     try {
-      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile`, {
+      await fetch(`http://localhost:5000/api/profile/updateApiCount`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token, increment: 3 }),
+        body: JSON.stringify({ userId: user?.id, increment }),
       });
     } catch (error) {
-      console.error('Failed to update API calls:', error);
+      console.log('Failed to update API calls:', error);
+    }
+  };
+
+  const updatePlanApiCounts = async (increment: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/subscription/updateApiCount`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user?.id, increment }),
+        }
+      );
+      const data = await response.json();
+      if (!data.ok) {
+        throw new Error(data.message || 'Failed to update API calls');
+      }
+      return data;
+    } catch (error) {
+      console.log('Failed to update API calls:', error);
     }
   };
 
   const generateResponse = async (modifiedEmailText: string) => {
     try {
+      const token = await getAuthToken();
       setLoading(true);
+      const updateApiCountResponse = await updatePlanApiCounts(3);
+      if (!updateApiCountResponse?.ok) {
+        setResponseText([
+          { text: 'Please update your plan to continue using the service.' },
+        ]);
+        setLoading(false);
+        return;
+      }
+      await updateProfileApiCalls(3);
+      await fetchProfileInfo(token, true, 0);
       const fetchResponse = async () => {
         const response = await fetch(
           'https://openrouter.ai/api/v1/chat/completions',
@@ -106,15 +140,44 @@ const MainModel: React.FC = () => {
 
       if (validResponses.length === 3) {
         setResponseText(validResponses);
-        await updateProfileApiCalls();
       } else {
         return null;
       }
     } catch (error) {
       console.log('Error:', error);
+      await updatePlanApiCounts(-3);
+      await updateProfileApiCalls(-3);
       return null;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProfileInfo = async (
+    token: string | undefined,
+    status: boolean,
+    apiCalls: Number
+  ) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, status, apiCalls }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile info from backend');
+      }
+
+      const profileInfo = await response.json();
+      const { id, emailAddress } = profileInfo;
+      localStorage.setItem('user', JSON.stringify({ id, emailAddress }));
+      return profileInfo;
+    } catch (error) {
+      console.log('Error in fetchProfileInfoFromBackend:', error);
+      setLoading(false);
+      throw new Error('Network response was not ok');
     }
   };
 
