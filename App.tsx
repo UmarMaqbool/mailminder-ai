@@ -65,7 +65,7 @@ function App() {
       localStorage.setItem('user', JSON.stringify({ id, emailAddress }));
       return profileInfo;
     } catch (error) {
-      console.log('Error in fetchProfileInfoFromBackend:', error);
+      console.error('Error in fetchProfileInfoFromBackend:', error);
       setLoading(false);
       throw new Error('Network response was not ok');
     }
