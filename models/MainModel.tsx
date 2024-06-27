@@ -51,21 +51,21 @@ const MainModel: React.FC = () => {
     chrome.runtime.sendMessage({ action: 'executeOnClicker' });
   };
 
-  const updateProfileApiCalls = async () => {
+  const updateProfileApiCalls = async (increment: number) => {
     try {
       await fetch(`http://localhost:5000/api/profile/updateApiCount`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: user?.id, increment: 3 }),
+        body: JSON.stringify({ userId: user?.id, increment }),
       });
     } catch (error) {
       console.error('Failed to update API calls:', error);
     }
   };
 
-  const updatePlanApiCounts = async () => {
+  const updatePlanApiCounts = async (increment: number) => {
     try {
       const response = await fetch(
         `http://localhost:5000/api/subscription/updateApiCount`,
@@ -74,7 +74,7 @@ const MainModel: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId: user?.id, increment: 3 }),
+          body: JSON.stringify({ userId: user?.id, increment }),
         }
       );
       const data = await response.json();
@@ -93,6 +93,15 @@ const MainModel: React.FC = () => {
     try {
       const token = await getAuthToken();
       setLoading(true);
+      const updateApiCountResponse = await updatePlanApiCounts(3);
+      if (!updateApiCountResponse?.ok) {
+        setResponseText([
+          { text: 'Please update your plan to continue using the service.' },
+        ]);
+        setLoading(false);
+        return;
+      }
+      await updateProfileApiCalls(3);
       await fetchProfileInfo(token, true, 0);
       const fetchResponse = async () => {
         const response = await fetch(
@@ -133,20 +142,13 @@ const MainModel: React.FC = () => {
 
       if (validResponses.length === 3) {
         setResponseText(validResponses);
-        await updateProfileApiCalls();
-        const updateApiCountResponse = await updatePlanApiCounts();
-        if (!updateApiCountResponse?.ok) {
-          setResponseText([
-            { text: 'Please update your plan to continue using the service.' },
-          ]);
-          setLoading(false);
-          return;
-        }
       } else {
         return null;
       }
     } catch (error) {
-      console.log('Error:', error);
+      console.error('Error:', error);
+      await updatePlanApiCounts(-3);
+      await updateProfileApiCalls(-3);
       return null;
     } finally {
       setLoading(false);
