@@ -61,7 +61,7 @@ const MainModel: React.FC = () => {
         body: JSON.stringify({ userId: user?.id, increment }),
       });
     } catch (error) {
-      console.error('Failed to update API calls:', error);
+      console.log('Failed to update API calls:', error);
     }
   };
 
@@ -78,14 +78,12 @@ const MainModel: React.FC = () => {
         }
       );
       const data = await response.json();
-
-      console.log(data, 'DATA FROM UPDATE API:::::');
       if (!data.ok) {
         throw new Error(data.message || 'Failed to update API calls');
       }
       return data;
     } catch (error) {
-      console.error('Failed to update API calls:', error);
+      console.log('Failed to update API calls:', error);
     }
   };
 
@@ -146,7 +144,7 @@ const MainModel: React.FC = () => {
         return null;
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.log('Error:', error);
       await updatePlanApiCounts(-3);
       await updateProfileApiCalls(-3);
       return null;
@@ -177,7 +175,7 @@ const MainModel: React.FC = () => {
       localStorage.setItem('user', JSON.stringify({ id, emailAddress }));
       return profileInfo;
     } catch (error) {
-      console.error('Error in fetchProfileInfoFromBackend:', error);
+      console.log('Error in fetchProfileInfoFromBackend:', error);
       setLoading(false);
       throw new Error('Network response was not ok');
     }

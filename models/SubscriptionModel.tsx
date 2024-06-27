@@ -82,7 +82,7 @@ const SubscriptionModel: React.FC = () => {
         setCurrentPlan(subscriptionPlan?.plan);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.log('Error fetching profile:', error);
         setLoading(false);
       }
     };
@@ -92,7 +92,7 @@ const SubscriptionModel: React.FC = () => {
 
   const handlePlanChange = async (planTitle: string) => {
     if (!user?.id) {
-      console.error('User data not available');
+      console.log('User data not available');
       return;
     }
     try {
@@ -113,7 +113,7 @@ const SubscriptionModel: React.FC = () => {
       setCurrentPlan(result.subscription.plan);
       setLoading(false);
     } catch (error) {
-      console.error('Error updating subscription:', error);
+      console.log('Error updating subscription:', error);
       setLoading(false);
     }
   };
