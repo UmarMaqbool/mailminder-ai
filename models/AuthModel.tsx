@@ -25,7 +25,7 @@ const AuthModel: React.FC = () => {
     try {
       const token = await getAuthToken();
       setLoading(true);
-      await fetchProfileInfo(token);
+      await fetchProfileInfo(token, true, 0);
     } catch (error) {
       console.log('Error fetching profile info:', error);
     } finally {
@@ -35,33 +35,33 @@ const AuthModel: React.FC = () => {
     }
   };
 
-  const fetchProfileInfo = async (token: string | undefined) => {
-    const response = await fetch(
-      'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos',
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const fetchProfileInfo = async (
+    token: string | undefined,
+    tokenStatus: boolean,
+    apiCalls: Number
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token, tokenStatus, apiCalls }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile info from backend');
       }
-    );
-    const profileInfo = await response.json();
-    const email = profileInfo.emailAddresses?.[0]?.value;
-    if (email) {
-      console.log('Profile already exists locally. Skipping backend request.');
+
+      const profileInfo = await response.json();
+      return profileInfo;
+    } catch (error) {
+      console.error('Error in fetchProfileInfoFromBackend:', error);
       setLoading(false);
-      return;
-    }
-    await fetch('http://localhost:5000/api/profile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(profileInfo),
-    });
-    if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return profileInfo;
   };
 
   const handleGoogleButton = async () => {
@@ -118,7 +118,11 @@ const AuthModel: React.FC = () => {
           ) : (
             <>
               <h2>Sign in to unlock the magic</h2>
-              <button onClick={handleGoogleButton} className="google-button">
+              <button
+                onClick={handleGoogleButton}
+                className="google-button"
+                disabled={loading}
+              >
                 <img
                   src="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png"
                   alt="Google Logo"

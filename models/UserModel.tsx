@@ -66,7 +66,7 @@ const UserModel: React.FC = () => {
         return;
       }
       const backendResponse = await fetch(
-        `http://localhost:5000/api/profile`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
         {
           method: 'POST',
           headers: {
@@ -117,7 +117,7 @@ const UserModel: React.FC = () => {
       try {
         setLoading(true);
         const backendResponse = await fetch(
-          `http://localhost:5000/api/profile`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
           {
             method: 'DELETE',
             headers: {
