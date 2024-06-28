@@ -3,13 +3,14 @@ import { TbReload } from 'react-icons/tb';
 import '../styles/stylesMainModel.css';
 import { getUserInfo } from '../utils/auth';
 import { getAuthToken } from '../background';
+
 const MainModel: React.FC = () => {
   const [responseText, setResponseText] = useState<{ text: string }[] | null>(
     null
   );
   const [selectedTone, setSelectedTone] = useState<string>('formal');
   const [loading, setLoading] = useState<boolean>(true);
-  const user = getUserInfo();
+  const user = getUserInfo(); // User ID and email address are saved in local storage and fetched here
   const useRefState = useRef(false);
 
   const LoadingChatBubble = ({ size }) => {
@@ -27,9 +28,10 @@ const MainModel: React.FC = () => {
 
   useEffect(() => {
     const messageListener = (message: any) => {
-      if (message.action == 'receiveEmailText') {
-        const emailText = `Please give a formal reply to this email and don't add prompt like here is you email and all stuff just give me the proper response in a good way \n ${message?.response}\nalso remember not to add Dear [Recipient's Name], or best regards in the reply or any other irrelevant things and make sure the reply should be short and simple not of big length\n give to the point response not adding additional info`;
-        const modifiedEmailText = emailText?.replace('formal', selectedTone);
+      if (message.action === 'receiveEmailText') {
+        // From background.ts it gets the text message of that email
+        const emailText = `Please give a formal reply to this email and don't add prompt like here is your email and all stuff just give me the proper response in a good way. \n${message?.response}\nAlso, remember not to add 'Dear [Recipient's Name]' or 'Best regards' in the reply or any other irrelevant things. Make sure the reply is short and simple, not of big length. Give a to-the-point response without adding additional info.`;
+        const modifiedEmailText = emailText?.replace('formal', selectedTone); // This replaces the word 'formal' in the emailText with the tone the user selected
         if (modifiedEmailText && modifiedEmailText.includes(selectedTone)) {
           generateResponse(modifiedEmailText);
           useRefState.current = true;
@@ -38,6 +40,7 @@ const MainModel: React.FC = () => {
     };
     chrome.runtime.onMessage.addListener(messageListener);
 
+    // Cleanup function
     return () => {
       chrome.runtime.onMessage.removeListener(messageListener);
     };
@@ -48,27 +51,32 @@ const MainModel: React.FC = () => {
     const tone = event.target.value;
     setSelectedTone(tone);
     useRefState.current = false;
-    chrome.runtime.sendMessage({ action: 'executeOnClicker' });
+    chrome.runtime.sendMessage({ action: 'executeOnClicker' }); // This executes the onClicker that fetches the mail message and then sends it with the message 'receiveEmailText' which we receive here
   };
 
+  // This updates the API count of the user, showing how many API calls this user has used to date
   const updateProfileApiCalls = async (increment: number) => {
     try {
-      await fetch(`http://localhost:5000/api/profile/updateApiCount`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: user?.id, increment }),
-      });
+      await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile/updateApiCount`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user?.id, increment }),
+        }
+      );
     } catch (error) {
       console.log('Failed to update API calls:', error);
     }
   };
 
+  // This updates the API count of the user for the specific plan they subscribed to
   const updatePlanApiCounts = async (increment: number) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/subscription/updateApiCount`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/subscription/updateApiCount`,
         {
           method: 'POST',
           headers: {
@@ -91,7 +99,7 @@ const MainModel: React.FC = () => {
     try {
       const token = await getAuthToken();
       setLoading(true);
-      const updateApiCountResponse = await updatePlanApiCounts(3);
+      const updateApiCountResponse = await updatePlanApiCounts(3); // This will check if the user has crossed the API count limit for the free plan, and if so, prompt them to upgrade their plan
       if (!updateApiCountResponse?.ok) {
         setResponseText([
           { text: 'Please update your plan to continue using the service.' },
@@ -107,7 +115,7 @@ const MainModel: React.FC = () => {
           {
             method: 'POST',
             headers: {
-              'content-type': 'application/json',
+              'Content-Type': 'application/json',
               Authorization:
                 'Bearer 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',
             },
@@ -119,7 +127,7 @@ const MainModel: React.FC = () => {
                 },
               ],
               model: 'gryphe/mythomist-7b:free',
-              max_token: 30,
+              max_token: 30, // This allows the response a maximum of 30 words
             }),
           }
         );
@@ -145,7 +153,7 @@ const MainModel: React.FC = () => {
       }
     } catch (error) {
       console.log('Error:', error);
-      await updatePlanApiCounts(-3);
+      await updatePlanApiCounts(-3); // If the API count increases and an error occurs with the OpenAI API, it will decrement that count
       await updateProfileApiCalls(-3);
       return null;
     } finally {
@@ -156,16 +164,19 @@ const MainModel: React.FC = () => {
   const fetchProfileInfo = async (
     token: string | undefined,
     status: boolean,
-    apiCalls: Number
+    apiCalls: number
   ) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token, status, apiCalls }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token, status, apiCalls }),
+        }
+      );
       if (!response.ok) {
         throw new Error('Failed to fetch profile info from backend');
       }
@@ -182,6 +193,7 @@ const MainModel: React.FC = () => {
   };
 
   const handleResponseClick = (response: string) => {
+    // This sends the response to the contentScript where it should be pasted in the reply box
     chrome.runtime.sendMessage({
       action: 'suggestedText',
       suggestion: response,
@@ -193,6 +205,7 @@ const MainModel: React.FC = () => {
   };
 
   const handleReloadClick = async () => {
+    // This executes the onClicker with the selected tone
     setLoading(true);
     useRefState.current = false;
     chrome.runtime.sendMessage({

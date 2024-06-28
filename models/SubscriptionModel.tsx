@@ -17,12 +17,12 @@ const SubscriptionModel: React.FC = () => {
   const [currentPlan, setCurrentPlan] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [plans, setPlans] = useState<Plan[]>([]);
-  const user = getUserInfo();
+  const user = getUserInfo(); // User ID and email address are saved in local storage and fetched here
 
   const getSubscriptionPlan = async () => {
     try {
       const response = await fetch(
-        'http://localhost:5000/api/subscriptionPlan',
+        '${process.env.REACT_APP_API_BASE_URL}/api/subscriptionPlan',
         {
           method: 'GET',
           headers: {
@@ -101,7 +101,7 @@ const SubscriptionModel: React.FC = () => {
     }
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/subscription`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/subscription`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,6 +127,7 @@ const SubscriptionModel: React.FC = () => {
       <div className="will-be-soon-button">
         {/* <button>Will Be Added Soon</button> */}
       </div>
+      {/* You can add className with contain to make blur the container  "blur-effect" */}
       <div className="subscription-container">
         {loading ? (
           <div className="spinner"></div>

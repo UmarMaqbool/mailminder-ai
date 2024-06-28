@@ -18,7 +18,7 @@ function App() {
       generateResponse();
     }
     return () => {
-      useRefState.current = false;
+      useRefState.current = false; // Cleanup on component unmount
     };
   }, []);
 
@@ -29,7 +29,7 @@ function App() {
       const response = await fetchProfileInfo(token, true, 0);
       if (useRefState.current) {
         setAuthenticated(true);
-        setResponseText(response.profileImage || 'default-photo-url');
+        setResponseText(response.profileImage || 'default-photo-url'); // Update profile image or use default
       }
     } catch (error) {
       if (useRefState.current) {
@@ -43,13 +43,14 @@ function App() {
     }
   };
 
+  // Fetches profile information from the backend using the provided token.
   const fetchProfileInfo = async (
     token: string | undefined,
     status: boolean,
     apiCalls: Number
   ) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/profile`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +63,7 @@ function App() {
 
       const profileInfo = await response.json();
       const { id, emailAddress } = profileInfo;
-      localStorage.setItem('user', JSON.stringify({ id, emailAddress }));
+      localStorage.setItem('user', JSON.stringify({ id, emailAddress })); // Store user info in local storage
       return profileInfo;
     } catch (error) {
       console.error('Error in fetchProfileInfoFromBackend:', error);
@@ -83,7 +84,7 @@ function App() {
         const gmailPattern = /https:\/\/mail\.google\.com\//;
 
         if (activeTab.url && gmailPattern.test(activeTab.url)) {
-          chrome.tabs.sendMessage(activeTab.id || 0, '');
+          chrome.tabs.sendMessage(activeTab.id || 0, ''); // Check if the user is in gmail tab or any other if in gmail then open model in same tab otherwise redirect to another new tab
           setTimeout(() => {
             chrome.tabs.sendMessage(activeTab.id || 0, {
               action: 'openUserProfile',
@@ -119,6 +120,8 @@ function App() {
     await generateResponse();
   };
 
+  // Handles the deletion of the authentication token as it only change the status of user to false
+
   const deleteTokenHandler = async () => {
     try {
       const token = await getAuthToken(false);
@@ -130,6 +133,8 @@ function App() {
           },
         });
         chrome.identity.removeCachedAuthToken({ token }, () => {
+          // This removed the token from the chrome and by doing this user logout
+          // You can check the token saved by visiting chrome://identity-internals/
           setAuthenticated(false);
           setResponseText(null);
           console.log('Token revoked and deleted');
