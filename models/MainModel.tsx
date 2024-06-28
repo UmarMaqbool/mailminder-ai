@@ -10,6 +10,7 @@ const MainModel: React.FC = () => {
   );
   const [selectedTone, setSelectedTone] = useState<string>('formal');
   const [loading, setLoading] = useState<boolean>(true);
+  const [updatePlan, setUpdatePlan] = useState<boolean>(false);
   const user = getUserInfo(); // User ID and email address are saved in local storage and fetched here
   const useRefState = useRef(false);
 
@@ -101,9 +102,8 @@ const MainModel: React.FC = () => {
       setLoading(true);
       const updateApiCountResponse = await updatePlanApiCounts(3); // This will check if the user has crossed the API count limit for the free plan, and if so, prompt them to upgrade their plan
       if (!updateApiCountResponse?.ok) {
-        setResponseText([
-          { text: 'Please update your plan to continue using the service.' },
-        ]);
+        setResponseText(null);
+        setUpdatePlan(true);
         setLoading(false);
         return;
       }
@@ -214,6 +214,22 @@ const MainModel: React.FC = () => {
     });
   };
 
+  const handleUpdatePlanClick = async () => {
+    const token = await getAuthToken();
+    const newUrl = chrome.runtime.getURL('tabInfoModel.html');
+    chrome.tabs.create({ url: newUrl }, (newTab) => {
+      chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo) {
+        if (tabId === newTab?.id && changeInfo.status === 'complete') {
+          chrome.tabs.onUpdated.removeListener(listener);
+          chrome.tabs.sendMessage(tabId, {
+            action: 'showUserProfile',
+            token: token,
+          });
+        }
+      });
+    });
+  };
+
   return (
     <div className="container">
       <div>
@@ -280,6 +296,17 @@ const MainModel: React.FC = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {updatePlan && (
+                <span
+                  className="response-item"
+                  onClick={handleUpdatePlanClick}
+                  style={{
+                    color: 'blue',
+                  }}
+                >
+                  Please update your plan
+                </span>
+              )}
               {responseText ? (
                 responseText.map((response, index) => (
                   <div key={index}>
@@ -301,7 +328,9 @@ const MainModel: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <p className="response-item">No response available</p>
+                <div>
+                  <p className="response-item">No response available</p>
+                </div>
               )}
               {!loading ? (
                 <button className="reload-button" onClick={handleReloadClick}>
