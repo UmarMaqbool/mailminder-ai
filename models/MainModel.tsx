@@ -57,16 +57,13 @@ const MainModel: React.FC = () => {
   // This updates the API count of the user, showing how many API calls this user has used to date
   const updateProfileApiCalls = async (increment: number) => {
     try {
-      await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/profile/updateApiCount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId: user?.id, increment }),
-        }
-      );
+      await fetch(`http://localhost:5000/api/profile/updateApiCount`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?.id, increment }),
+      });
     } catch (error) {
       console.log('Failed to update API calls:', error);
     }
@@ -76,7 +73,7 @@ const MainModel: React.FC = () => {
   const updatePlanApiCounts = async (increment: number) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/subscription/updateApiCount`,
+        `http://localhost:5000/api/subscription/updateApiCount`,
         {
           method: 'POST',
           headers: {
@@ -167,16 +164,13 @@ const MainModel: React.FC = () => {
     apiCalls: number
   ) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token, status, apiCalls }),
-        }
-      );
+      const response = await fetch(`http://localhost:5000/api/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, status, apiCalls }),
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch profile info from backend');
       }

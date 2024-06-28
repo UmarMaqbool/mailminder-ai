@@ -22,7 +22,7 @@ const SubscriptionModel: React.FC = () => {
   const getSubscriptionPlan = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/subscriptionPlan`,
+        `http://localhost:5000/api/subscriptionPlan`,
         {
           method: 'GET',
           headers: {
@@ -52,7 +52,7 @@ const SubscriptionModel: React.FC = () => {
 
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL}/api/profile?email=${user?.emailAddress}`,
+          `http://localhost:5000/api/profile?email=${user?.emailAddress}`,
           {
             method: 'GET',
             headers: {
@@ -68,7 +68,7 @@ const SubscriptionModel: React.FC = () => {
         const data = await response.json();
         setCurrentPlan(data.subscriptionPlan);
         const subscriptionResponse = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL}/api/subscription/${data._id}`,
+          `http://localhost:5000/api/subscription/${data._id}`,
           {
             method: 'GET',
             headers: {
@@ -101,16 +101,13 @@ const SubscriptionModel: React.FC = () => {
     }
     try {
       setLoading(true);
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/subscription`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId: user?.id, planTitle }),
-        }
-      );
+      const response = await fetch(`http://localhost:5000/api/subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?.id, planTitle }),
+      });
 
       if (!response.ok) {
         throw new Error('Failed to update subscription');
