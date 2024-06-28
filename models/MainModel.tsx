@@ -2,6 +2,7 @@ import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { TbReload } from 'react-icons/tb';
 import '../styles/stylesMainModel.css';
 import { getUserInfo } from '../utils/auth';
+import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { getAuthToken } from '../background';
 
 const MainModel: React.FC = () => {
@@ -300,11 +301,20 @@ const MainModel: React.FC = () => {
                 <span
                   className="response-item"
                   onClick={handleUpdatePlanClick}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f7f7f7';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#ffffff';
+                  }}
                   style={{
                     color: 'blue',
                   }}
                 >
-                  Please update your plan
+                  Please update your plan{'  '}
+                  <span style={{ fontSize: '10px', color: 'black' }}>
+                    <FaArrowUpRightFromSquare />
+                  </span>
                 </span>
               )}
               {responseText ? (
