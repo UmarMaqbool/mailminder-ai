@@ -1,5 +1,6 @@
 let emailText = null;
 
+//Retrieves the OAuth 2.0 token for authentication with Google APIs with scope like Fetching the email and profile information
 export async function getAuthToken(
   interactive = true
 ): Promise<string | undefined> {
@@ -25,10 +26,12 @@ export async function getAuthToken(
   });
 }
 
+// Listener for messages from other parts of the extension
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   const { action } = message;
   switch (action) {
     case 'getMessageDetails':
+      // Fetches the details of a specific Gmail message with the help of OAuth 2.0 token
       const { messageId, accessToken } = message;
       try {
         const response = await fetch(
@@ -45,6 +48,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       break;
 
     case 'checkAuthentication':
+      // Checks if the user is authenticated and sends the status to the content script
       (async () => {
         const authToken = await getAuthToken(false);
         if (authToken) {
@@ -65,6 +69,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       break;
 
     case 'executeOnClicker':
+      // Executes an action when a specific button is clicked
       const token = await getAuthToken();
       const [tab] = await chrome.tabs.query({
         active: true,
@@ -81,9 +86,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       }
       break;
 
-    case 'clickReplyButton':
-    case 'suggestedText':
-    case 'closeIframe':
+    case 'clickReplyButton': // This will auto click the reply button when we click our extension mailMinder button
+    case 'suggestedText': // This paste the replies that are generated from OpenAi into the Reply Box
+    case 'closeIframe': // This will close the iframe
+      // Handles various user actions by forwarding messages to the content script
       const tabs = await chrome.tabs.query({
         active: true,
         currentWindow: true,
@@ -96,15 +102,16 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
 });
 
+// Handler for simulating a click action and sending the email text to the content script.
 const clickHandler = async () => {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   const activeTab = tabs[0];
   if (activeTab && activeTab.id) {
     chrome.tabs.sendMessage(activeTab.id, { action: 'clickReplyButton' });
-    setTimeout(() => {
+    setTimeout(() => { // TimeOut here as it takes some time to get the emailText with googleapis 
       if (activeTab && activeTab.id)
         chrome.tabs.sendMessage(activeTab.id, {
-          action: 'receiveEmailText',
+          action: 'receiveEmailText', // This send the email text to the MainModel to generate response with AI
           response: emailText,
         });
     }, 1000);

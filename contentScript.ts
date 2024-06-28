@@ -1,6 +1,8 @@
 import './styles/stylesContentScript.css';
 let iframeExists = false;
 let iUserProfile = false;
+
+// Checks the authentication status by sending a message to the background script.
 const checkAuthentication = async (): Promise<any> => {
   return new Promise((resolve) => {
     chrome.runtime.sendMessage({ action: 'checkAuthentication' });
@@ -12,6 +14,7 @@ const checkAuthentication = async (): Promise<any> => {
   });
 };
 
+// Shows the login button in an iframe.
 const showLoginButton = () => {
   const iframe = document.createElement('iframe');
   iframe.classList.add('custom-iframe');
@@ -37,6 +40,7 @@ const showLoginButton = () => {
   });
 };
 
+// This is handled in App.tsx that if user in the gmail chrome page that open this iframe there
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if (msg.action === 'openUserProfile') {
     if (!iUserProfile) {
@@ -48,6 +52,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         iframe.classList.add('active');
       }, 10);
       iUserProfile = true;
+
       const closeListener = (message: { action: string }) => {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
@@ -74,6 +79,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   }
 });
 
+// Adds the main button to the Gmail page.
 const addButtonToPage = () => {
   const mainDiv = document.querySelector('.amn');
   if (mainDiv && !document.getElementById('myInjectButton')) {
@@ -107,6 +113,9 @@ const addButtonToPage = () => {
   }
 };
 
+/**
+ * Adds the reply button to the reply section.
+ */
 const addButtonToReply = () => {
   const mainSmallDiv = document.querySelector('.J-J5-Ji.btA');
   if (mainSmallDiv && !document.getElementById('myInjectSmallButton')) {
@@ -144,6 +153,8 @@ const addButtonToReply = () => {
   }
 };
 
+// Checks if the current URL is the Gmail inbox.
+
 function isGmailInbox(url: string): boolean {
   const inboxRegex = /#(inbox|sent)/;
   return (
@@ -151,18 +162,23 @@ function isGmailInbox(url: string): boolean {
   );
 }
 
+/**
+ * Adds the inbox button if the current URL is the Gmail inbox.
+ */
 function addInboxButtonIfRequired(url: string) {
   if (isGmailInbox(url)) {
     addButtonToPage();
   }
 }
 
+// Adds the main button to the page on window load
 window.onload = function () {
   setTimeout(() => {
     addButtonToPage();
   }, 1000);
 };
 
+// Adds event listener to add buttons on certain user interactions
 document.addEventListener('click', (event) => {
   const target = event.target as HTMLElement;
   if (
@@ -183,8 +199,10 @@ document.addEventListener('click', (event) => {
   }
 });
 
+// Adds the inbox button if required based on the initial URL
 addInboxButtonIfRequired(window.location.href);
 
+// Adds the inbox button if required when the URL hash changes
 window.addEventListener('hashchange', () => {
   addInboxButtonIfRequired(window.location.href);
   const url = window.location.href;
@@ -193,6 +211,7 @@ window.addEventListener('hashchange', () => {
   }
 });
 
+// Handles the click reply button action
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'clickReplyButton') {
     const replyButton = document.querySelector(
@@ -209,11 +228,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       }, 10);
       iframeExists = true;
 
-      const closeListener = (
-        message: { action: string },
-        sender: any,
-        sendResponse: any
-      ) => {
+      const closeListener = (message: { action: string }) => {
         if (message.action === 'closeIframe') {
           if (iframe && iframe.parentNode) {
             iframe.classList.remove('active');
@@ -232,6 +247,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+// Get the messageId of gmail and hit googleapis with that to get the gmail text
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'getMessageText') {
     const { token } = message;
@@ -247,6 +263,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+// Paste the AI generated text to the reply Box
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'suggestedText') {
     const replyInput = document.querySelector(
@@ -260,6 +277,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+// Observes DOM changes to add buttons to reply sections dynamically
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     if (mutation.type === 'childList') {
