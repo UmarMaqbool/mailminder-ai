@@ -22,7 +22,7 @@ const SubscriptionModel: React.FC = () => {
   const getSubscriptionPlan = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/subscriptionPlan`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/subscriptionPlan`,
         {
           method: 'GET',
           headers: {
@@ -52,7 +52,7 @@ const SubscriptionModel: React.FC = () => {
 
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/profile?email=${user?.emailAddress}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/profile?email=${user?.emailAddress}`,
           {
             method: 'GET',
             headers: {
@@ -68,7 +68,7 @@ const SubscriptionModel: React.FC = () => {
         const data = await response.json();
         setCurrentPlan(data.subscriptionPlan);
         const subscriptionResponse = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/subscription/${data._id}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/subscription/${data._id}`,
           {
             method: 'GET',
             headers: {
@@ -102,7 +102,7 @@ const SubscriptionModel: React.FC = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/subscription`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/subscription`,
         {
           method: 'POST',
           headers: {

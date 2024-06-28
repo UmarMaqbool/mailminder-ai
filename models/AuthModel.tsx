@@ -42,7 +42,7 @@ const AuthModel: React.FC = () => {
   ) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/profile`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
         {
           method: 'POST',
           headers: {

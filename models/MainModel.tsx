@@ -60,7 +60,7 @@ const MainModel: React.FC = () => {
   const updateProfileApiCalls = async (increment: number) => {
     try {
       await fetch(
-        `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/profile/updateApiCount`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile/updateApiCount`,
         {
           method: 'POST',
           headers: {
@@ -78,7 +78,7 @@ const MainModel: React.FC = () => {
   const updatePlanApiCounts = async (increment: number) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/subscription/updateApiCount`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/subscription/updateApiCount`,
         {
           method: 'POST',
           headers: {
@@ -169,7 +169,7 @@ const MainModel: React.FC = () => {
   ) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/profile`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
         {
           method: 'POST',
           headers: {
