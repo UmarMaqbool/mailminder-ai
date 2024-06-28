@@ -65,13 +65,16 @@ const UserModel: React.FC = () => {
         setLoading(false);
         return;
       }
-      const backendResponse = await fetch(`http://localhost:5000/api/profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileInfo),
-      });
+      const backendResponse = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profileInfo),
+        }
+      );
 
       if (backendResponse.ok) {
         console.log('Profile data sent to the backend');
@@ -114,7 +117,7 @@ const UserModel: React.FC = () => {
       try {
         setLoading(true);
         const backendResponse = await fetch(
-          `http://localhost:5000/api/profile`,
+          `${process.env.REACT_APP_API_BASE_URL_LOCAL}/api/profile`,
           {
             method: 'DELETE',
             headers: {
