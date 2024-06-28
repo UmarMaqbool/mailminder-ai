@@ -50,13 +50,16 @@ function App() {
     apiCalls: Number
   ) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token, status, apiCalls }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token, status, apiCalls }),
+        }
+      );
       if (!response.ok) {
         throw new Error('Failed to fetch profile info from backend');
       }
@@ -66,7 +69,7 @@ function App() {
       localStorage.setItem('user', JSON.stringify({ id, emailAddress })); // Store user info in local storage
       return profileInfo;
     } catch (error) {
-      console.error('Error in fetchProfileInfoFromBackend:', error);
+      console.log('Error in fetchProfileInfoFromBackend:', error);
       setLoading(false);
       throw new Error('Network response was not ok');
     }
