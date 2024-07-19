@@ -7,6 +7,7 @@ module.exports = {
   mode: 'production',
   target: 'web',
   entry: {
+    // Add the components path that surely be render in you extension
     contentScript: './contentScript.ts',
     background: './background.ts',
     react: './public/index.tsx',
@@ -21,6 +22,7 @@ module.exports = {
     clean: true,
   },
   plugins: [
+    // Add the html file path that as chrome only runs the html file in dist
     new HtmlWebpackPlugin({
       template: './public/index.html',
       filename: 'index.html',
@@ -66,6 +68,7 @@ module.exports = {
   ],
   module: {
     rules: [
+      //Set rules for css files or the image file if you are using
       {
         test: /.(ts|tsx)$/,
         exclude: /node_modules/,
